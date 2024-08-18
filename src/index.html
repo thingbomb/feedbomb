@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedbomb</title>
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div id="root">
+        <aside>
+            <h2>Feedbomb</h2><br>
+            <div class="feed-list">
+                <button class="feed-item" onclick="filterFeeds('all+posts')">Your feed</button>
+            </div>
+        </aside>
+        <main>
+            <h2>Your feed</h2>
+            <br>
+            <div id="feed-content">
+                Loading feeds
+            </div>
+        </main>
+    </div>
+    <script src="js/home.js"></script>
+</body>
+</html>

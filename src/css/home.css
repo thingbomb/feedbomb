@@ -1,0 +1,91 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: #191919;
+    color: white;
+}
+
+body, input, select, textarea, button {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+}
+
+#root {
+    display: grid;
+    height: 100vh;
+    width: 100vw;
+    grid-template-columns: 240px calc(100% - 240px);
+}
+
+aside {
+    background-color: #202020;
+    box-shadow: rgba(255, 255, 255, 0.05) -1px 0px 0px 0px inset;
+    padding: 20px;
+
+    .feed-list {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .feed-item {
+        padding: 10px;
+        border-radius: 6px;
+        user-select: none;
+        cursor: pointer;
+        background-color: transparent;
+        border: none;
+        text-align: left;
+        font-size: 16px;
+        color: white;
+    }
+    .feed-item:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+    .feed-item:active {
+        background-color: rgba(255, 255, 255, 0.10);
+    }
+}
+
+main {
+    padding: 20px;
+    overflow: auto;
+    scrollbar-color: #404040 transparent;
+
+    #feed-content {
+        .article {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: left;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            color: white;
+            text-decoration: none;
+
+            .headline {
+                font-weight: bold;
+                font-size: 16px;
+            }
+            .text {
+                font-size: 13px;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+                word-break: break-word;
+                color: #bcb8b1;
+            }
+        }
+        .article:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+        .article:active {
+            background-color: rgba(255, 255, 255, 0.10);
+        }
+    }
+}
