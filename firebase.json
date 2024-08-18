@@ -1,6 +1,8 @@
 {
   "hosting": {
     "public": "src",
+    "cleanUrls": true,
+    "site": "feedbomb",
     "ignore": [
       "firebase.json",
       "**/.*",
