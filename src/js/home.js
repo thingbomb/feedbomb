@@ -138,16 +138,7 @@ async function getSavedFeeds() {
 
         allFeeds.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
-        document.querySelector("#feed-content").innerHTML = allFeeds.map(feed =>
-            `<a class="article" href="read/index.html?url=${feed.link}">
-                <img src="${feed.image}" class="thumbnail">
-                <div class="spacer"></div>
-                <div class="content">
-                <span class="headline">${feed.title}</span>
-                <span class="text">${feed.feedTitle} / ${timeDifference(new Date(), new Date(feed.pubDate))}<br><br>${feed.description ? feed.description : ""}</span>
-                </div>
-            </a>`
-        ).join("");
+        filterFeeds("all+posts");
 
         if (!document.querySelector(".feed-item.add-feed")) {
             let addFeedButton = document.createElement("button");
@@ -157,10 +148,10 @@ async function getSavedFeeds() {
             document.querySelector(".feed-list").appendChild(addFeedButton);
         }
     } else {
-        document.querySelector("#feed-content").innerHTML = "No feeds saved";
+        document.querySelector("#feed-content").innerHTML = "<span style='padding: 10px;'>No feeds saved</span>";
         if (!document.querySelector(".feed-item.add-feed")) {
             let addFeedButton = document.createElement("button");
-            addFeedButton.innerHTML = "Add feed";
+            addFeedButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-440H240q-17 0-28.5-11.5T200-480q0-17 11.5-28.5T240-520h200v-200q0-17 11.5-28.5T480-760q17 0 28.5 11.5T520-720v200h200q17 0 28.5 11.5T760-480q0 17-11.5 28.5T720-440H520v200q0 17-11.5 28.5T480-200q-17 0-28.5-11.5T440-240v-200Z"/></svg><div class="spacer"></div><span>Add feed</span>`;
             addFeedButton.className = "feed-item add-feed";
             addFeedButton.addEventListener("click", addFeed);
             document.querySelector(".feed-list").appendChild(addFeedButton);
@@ -168,9 +159,15 @@ async function getSavedFeeds() {
     }
 }
 
-async function addFeed() {
-    const url = prompt("Enter the URL of the feed");
+async function addFeedURL() {
+    let url = document.getElementById("feed-url").value;
     if (url) {
+        if (url.startsWith("r/") || url.startsWith("/r/")) {
+            const subreddit = url.split("r/")[1];
+            url = `https://www.reddit.com/r/${subreddit}/.rss`;
+        } else if (!url.startsWith("http")) {
+            url = `https://${url}`;
+        }
         let savedFeeds = JSON.parse(localStorage.getItem("savedFeeds")) || [];
         savedFeeds.push(url);
         localStorage.setItem("savedFeeds", JSON.stringify(savedFeeds));
@@ -178,7 +175,14 @@ async function addFeed() {
     }
 }
 
+async function addFeed() {
+    document.getElementById("articles").style.display = "none";
+    document.getElementById("add-feed").style.display = "";
+}
+
 function filterFeeds(feedTitle) {
+    document.getElementById("add-feed").style.display = "none";
+    document.getElementById("articles").style.display = "";
     let copiedArray = [...allFeeds];
 
     if (feedTitle !== "all+posts") {
@@ -239,4 +243,10 @@ function filterFeeds(feedTitle) {
     });
 }
 
+document.getElementById("add-feed-button").addEventListener("click", addFeedURL);
+document.getElementById("feed-url").addEventListener("keyup", function (event) {
+    if (event.key === "Enter") {
+        addFeedURL();
+    }
+});
 getSavedFeeds();

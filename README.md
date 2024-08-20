@@ -8,6 +8,7 @@ Feedbomb is a simple and powerful RSS reader for the web. It is free, open-sourc
 - **Self-Hostable**: Host Feedbomb on your own server.
 - **PWA Support**: Works as a Progressive Web App.
 - **Built-in article reader**: Read articles with our simple and modern reader.
+- **Modern UI**: Feedbomb has a modern UI that is easy to use.
 - **Much more coming soon**
 
 ## Usage
