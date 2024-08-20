@@ -19,7 +19,7 @@ Feedbomb is a simple and powerful RSS reader for the web. It is free, open-sourc
 To self-host Feedbomb, follow these steps:
 
 1. **Clone the Repository**: Copy the `src` folder from this repository. This folder contains the client-side code only.
-2. **Set Up the Server**: The client-side code connects to server endpoints by default. Below is an example of how to set up a basic server using Express:
+2. **Set Up the Server**: The client-side code connects to server endpoints by default. Below is an example of how to set up our server endpoints using Express:
 
     ```js
     const express = require('express');
@@ -45,6 +45,19 @@ To self-host Feedbomb, follow these steps:
         })
         .catch(error => {
           res.status(500).send(error.toString());
+        });
+    });
+
+    app.get('/fetchArticleText', (req, res) => {
+      const url = req.query.url;
+      axios.get(url)
+        .then(response => {
+          res.set('Access-Control-Allow-Origin', '*');
+          res.set('Content-Type', 'text/plain');
+          res.send(response.data);
+        })
+        .catch(error => {
+          res.status(500).send(error);
         });
     });
 

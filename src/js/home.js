@@ -139,7 +139,7 @@ async function getSavedFeeds() {
         allFeeds.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
         document.querySelector("#feed-content").innerHTML = allFeeds.map(feed =>
-            `<a class="article" href="${feed.link}">
+            `<a class="article" href="read/index.html?url=${feed.link}">
                 <img src="${feed.image}" class="thumbnail">
                 <div class="spacer"></div>
                 <div class="content">
