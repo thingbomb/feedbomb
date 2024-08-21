@@ -1,4 +1,5 @@
 let allFeeds = [];
+let currentFilter = "all+posts";
 
 function decodeHtmlEntities(str) {
     return str
@@ -26,17 +27,25 @@ function areDatesOnTheSameDay(date1, date2) {
         date1Parts.day === date2Parts.day;
 }
 
+let feedsFailedToLoad = 0;
+
 function fetchFeed(url) {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await fetch('https://us-central1-awesomerssfeedreader.cloudfunctions.net/getFeed?url=' + url);
+            if (!response.ok) {
+                feedsFailedToLoad++;
+                document.getElementById("status").innerHTML = `Failed to load ${feedsFailedToLoad} ${feedsFailedToLoad === 1 ? "feed" : "feeds"}`;
+                reject([]);
+                return;
+            }
             const text = await response.text();
 
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(text, "application/xml");
             let feedTitle = xmlDoc.querySelector("title") ? xmlDoc.querySelector("title").textContent : "";
-            let items = xmlDoc.querySelectorAll("item, entry");
-            let icon = `<img height="24" src="https://logo.clearbit.com/${url.split("/")[2]}">`
+            let items = xmlDoc.querySelectorAll("item, entry") || xmlDoc.querySelector("rss").xmlDoc.querySelector("channel").querySelectorAll("item, entry");
+            let icon = `<img height="24" src="https://logo.clearbit.com/${url.split("/")[2]}" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAgAB/WRJ4pQAAAAASUVORK5CYII='">`
 
             if (!document.querySelector(`.feed-item[data-feed-title="${feedTitle}"]`)) {
                 document.querySelector(".feed-list").innerHTML += `<button class="feed-item" data-feed-title="${feedTitle}" onclick="filterFeeds('${feedTitle}')">${icon}<div class="spacer"></div><span>${feedTitle}</span></button>`;
@@ -46,20 +55,20 @@ function fetchFeed(url) {
             items.forEach(item => {
                 const title = item.querySelector("title") ? item.querySelector("title").textContent : "";
                 const linkElement = item.querySelector("link");
-                const content = item.getElementsByTagName("content:encoded")[0] ? item.getElementsByTagName("content:encoded")[0] : (item.querySelector("content") ? item.querySelector("content") : null);
-                console.log(item.getElementsByTagName("content:encoded"))
+                const content = (item.getElementsByTagName("content:encoded")[0] ? item.getElementsByTagName("content:encoded")[0] : (item.querySelector("content") ? item.querySelector("content") : null)) || "";
                 const link = linkElement ? (linkElement.getAttribute("href") || linkElement.textContent) : "#";
                 const description = item.querySelector("description, summary") ? item.querySelector("description, summary").textContent : "";
                 let placeholder = document.createElement("div");
                 let potentialImage;
                 if (content.innerHTML) {
                     placeholder.innerHTML = decodeHtmlEntities(content.innerHTML);
-                    potentialImage = placeholder.querySelector("img") ? placeholder.querySelector("img").src : `https://logo.clearbit.com/${url.split("/")[2]}`;
+                    potentialImage = (item.getElementsByTagName("media:thumbnail").src) || (placeholder.querySelector("img") ? placeholder.querySelector("img").src : `https://logo.clearbit.com/${url.split("/")[2]}`);
                 } else {
-                    placeholder.innerHTML = description ? description : new Date(item.querySelector("pubDate, updated") ? item.querySelector("pubDate, updated").textContent : "").toDateString();
+                    placeholder.innerHTML = description ? description : new Date(item.querySelector("pubDate, published") ? item.querySelector("pubDate, published").textContent : "").toDateString();
+                    potentialImage = item.getElementsByTagName("media:thumbnail")?.url || `https://logo.clearbit.com/${url.split("/")[2]}`;
                 }
 
-                let pubDate = item.querySelector("pubDate, updated") ? item.querySelector("pubDate, updated").textContent : "";
+                let pubDate = item.querySelector("pubDate, published") ? item.querySelector("pubDate, published").textContent : "";
                 let dateObj = new Date(pubDate);
                 let fullDescription = placeholder.innerText;
                 let authorElement = item.querySelector("author");
@@ -157,6 +166,33 @@ async function getSavedFeeds() {
             document.querySelector(".feed-list").appendChild(addFeedButton);
         }
     }
+    if (!document.querySelector(".feed-item.import-ompl")) {
+        let importOmplButton = document.createElement("input");
+        importOmplButton.type = "file";
+        importOmplButton.accept = ".opml";
+        importOmplButton.id = "import-ompl";
+        importOmplButton.addEventListener("change", addFeed);
+        importOmplButton.style.display = "none";
+        document.querySelector(".feed-list").appendChild(importOmplButton);
+        importOmplButton.addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
+                    const urls = extractURLs(xmlDoc);
+                };
+                reader.readAsText(file);
+            }
+        });
+        let buttonLabel = document.createElement("label")
+        buttonLabel.innerHTML = "Import OPML"
+        buttonLabel.className = "feed-item import-ompl"
+        buttonLabel.setAttribute("for", "import-ompl")
+        buttonLabel.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-200h80v-167l64 64 56-57-160-160-160 160 57 56 63-63v167ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/></svg><div class="spacer"></div><span>Import OMPL</span>'
+        document.querySelector(".feed-list").appendChild(buttonLabel);
+    }
 }
 
 async function addFeedURL() {
@@ -180,67 +216,116 @@ async function addFeed() {
     document.getElementById("add-feed").style.display = "";
 }
 
-function filterFeeds(feedTitle) {
+async function filterFeeds(feedTitle, searchTerm) {
+    currentFilter = feedTitle;
     document.getElementById("add-feed").style.display = "none";
     document.getElementById("articles").style.display = "";
     let copiedArray = [...allFeeds];
 
-    if (feedTitle !== "all+posts") {
-        copiedArray = copiedArray.filter(feed =>
-            feed.feedTitle.toLowerCase().trim().replaceAll(" ", "").includes(feedTitle.toLowerCase().trim().replaceAll(" ", ""))
-        );
-    }
-
-    if (feedTitle.split(" - ")[1]) {
-        document.getElementById("feedTitle").innerHTML = feedTitle.split(" - ")[0];
-        document.getElementById("category").innerHTML = feedTitle.split(" - ")[1];
-        document.getElementById("category").style.display = "block";
-    } else {
-        document.getElementById("feedTitle").innerHTML = feedTitle == "all+posts" ? "Home" : feedTitle;
-        document.getElementById("category").style.display = "none";
-    }
-
-
-    copiedArray.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-    document.querySelector("#feed-content").innerHTML = "";
-    let lastDate;
-    function formatDate(date) {
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        return new Intl.DateTimeFormat('en-US', options).format(date).toUpperCase();
-    }
-    copiedArray.forEach(feed => {
-        if (lastDate) {
-            if (!areDatesOnTheSameDay(new Date(feed.pubDate), lastDate)) {
-                let dateMarker = document.createElement("div")
-                dateMarker.className = "dateMarker"
-                dateMarker.innerHTML = formatDate(lastDate)
-                document.getElementById("feed-content").appendChild(dateMarker)
-            }
+    function copiedArrayHandler(copiedArray) {
+        if (feedTitle.split(" - ")[1]) {
+            document.getElementById("feedTitle").innerHTML = feedTitle.split(" - ")[0];
+            document.getElementById("category").innerHTML = feedTitle.split(" - ")[1];
+            document.getElementById("category").style.display = "block";
         } else {
-            if (areDatesOnTheSameDay(new Date(feed.pubDate), new Date())) {
-                let dateMarker = document.createElement("div")
-                dateMarker.className = "dateMarker"
-                dateMarker.innerHTML = 'TODAY'
-                document.getElementById("feed-content").appendChild(dateMarker)
-            } else {
-                let dateMarker = document.createElement("div")
-                dateMarker.className = "dateMarker"
-                dateMarker.innerHTML = formatDate(new Date(feed.pubDate))
-                document.getElementById("feed-content").appendChild(dateMarker)
-            }
+            document.getElementById("feedTitle").innerHTML = feedTitle == "all+posts" ? "Home" : feedTitle;
+            document.getElementById("category").style.display = "none";
         }
-        lastDate = new Date(feed.pubDate);
-        let newFeedItem = document.createElement("a")
-        newFeedItem.className = "article"
-        newFeedItem.href = feed.link
-        newFeedItem.innerHTML = `<img src="${feed.image}" class="thumbnail">
-        <div class="spacer"></div>
-        <div class="content">
-            <span class="headline">${feed.title}</span>
-            <span class="text">by ${feed.author} / ${timeDifference(new Date(), new Date(feed.pubDate))}<br><br>${feed.description ? feed.description : ""}</span>
-        </div>`
-        document.getElementById("feed-content").appendChild(newFeedItem)
-    });
+    
+    
+        copiedArray.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+        document.querySelector("#feed-content").innerHTML = "";
+        let lastDate;
+        function formatDate(date) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Intl.DateTimeFormat('en-US', options).format(date).toUpperCase();
+        }
+        copiedArray.forEach(feed => {
+            if (lastDate) {
+                if (!areDatesOnTheSameDay(new Date(feed.pubDate), lastDate)) {
+                    let dateMarker = document.createElement("div")
+                    dateMarker.className = "dateMarker"
+                    dateMarker.innerHTML = formatDate(lastDate)
+                    document.getElementById("feed-content").appendChild(dateMarker)
+                }
+            } else {
+                if (areDatesOnTheSameDay(new Date(feed.pubDate), new Date())) {
+                    let dateMarker = document.createElement("div")
+                    dateMarker.className = "dateMarker"
+                    dateMarker.innerHTML = 'TODAY'
+                    document.getElementById("feed-content").appendChild(dateMarker)
+                } else {
+                    let dateMarker = document.createElement("div")
+                    dateMarker.className = "dateMarker"
+                    dateMarker.innerHTML = formatDate(new Date(feed.pubDate))
+                    document.getElementById("feed-content").appendChild(dateMarker)
+                }
+            }
+            lastDate = new Date(feed.pubDate);
+            let newFeedItem = document.createElement("a")
+            newFeedItem.className = "article"
+            newFeedItem.href = `read/index.html?url=${feed.link}`
+            newFeedItem.innerHTML = `<img src="${feed.image}" class="thumbnail">
+            <div class="spacer"></div>
+            <div class="content">
+                <span class="headline">${feed.title}</span>
+                <span class="text">by ${feed.author} / ${timeDifference(new Date(), new Date(feed.pubDate))}<br><br>${feed.description ? feed.description : ""}</span>
+            </div>`
+            document.getElementById("feed-content").appendChild(newFeedItem)
+        });
+    }
+
+    if (feedTitle !== "all+posts") {
+        copiedArray = await copiedArray.filter(feed => {
+            return feed.feedTitle.toLowerCase().trim().replaceAll(" ", "").includes(feedTitle.toLowerCase().trim().replaceAll(" ", ""))
+        });
+        if (searchTerm) {
+            copiedArray = await copiedArray.filter(feed => {
+                return feed.title.toLowerCase().trim().replaceAll(" ", "").includes(searchTerm.toLowerCase().trim().replaceAll(" ", ""));
+            });
+            copiedArrayHandler(copiedArray)
+        } else {
+            copiedArrayHandler(copiedArray)
+        }
+    } else {
+        if (searchTerm) {
+            copiedArray = await copiedArray.filter(feed => {
+                return feed.title.toLowerCase().trim().replaceAll(" ", "").includes(searchTerm.toLowerCase().trim().replaceAll(" ", ""));
+            });
+            copiedArrayHandler(copiedArray)
+        } else {
+            copiedArrayHandler(copiedArray);
+        }
+    }
+}
+
+function extractURLs(xmlDoc) {
+    const outlines = xmlDoc.getElementsByTagName("outline");
+    const urls = [];
+
+    for (let i = 0; i < outlines.length; i++) {
+        const url = outlines[i].getAttribute("xmlUrl") || outlines[i].getAttribute("url");
+        if (url) {
+            urls.push(url);
+        }
+    }
+
+    if (!localStorage.getItem("savedFeeds")) {
+        localStorage.setItem("savedFeeds", JSON.stringify(urls));
+        window.location.reload();
+        return;
+    }
+
+    for (let i = 0; i < urls.length; i++) {
+        const url = urls[i];
+        if (url.startsWith("http")) {
+            localStorage.setItem("savedFeeds", JSON.stringify(JSON.parse(localStorage.getItem("savedFeeds")) || []).concat(url));
+        } else {
+            localStorage.setItem("savedFeeds", JSON.stringify(JSON.parse(localStorage.getItem("savedFeeds")) || []).concat(`https://${url}`));
+        }
+    }
+    window.location.reload();
+    return;
 }
 
 document.getElementById("add-feed-button").addEventListener("click", addFeedURL);
@@ -249,4 +334,8 @@ document.getElementById("feed-url").addEventListener("keyup", function (event) {
         addFeedURL();
     }
 });
+document.getElementById("search").addEventListener("keyup", function (event) {
+    filterFeeds(currentFilter, event.target.value);
+});
+
 getSavedFeeds();

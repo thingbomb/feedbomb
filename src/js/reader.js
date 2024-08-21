@@ -5,6 +5,7 @@ function fetchArticle(url) {
     fetch('https://us-central1-awesomerssfeedreader.cloudfunctions.net/fetchArticleText?url=' + url)
         .then(response => response.text())
         .then(text => {
+            try {
             let placeholderElement = document.createElement("div");
             placeholderElement.innerHTML = text;
             document.querySelector("#articlecontent").innerHTML = placeholderElement.querySelector("article").innerHTML;
@@ -13,24 +14,25 @@ function fetchArticle(url) {
             });
             document.getElementById("articletitle").innerHTML = placeholderElement.querySelector("h1").innerText;
             function removeNonPElements(element) {
-                // Get all child nodes of the current element
                 let children = Array.from(element.childNodes);
                 
-                // Loop through the child nodes
                 children.forEach(child => {
-                    // If the child is an element and not a <p>
                     if (child.nodeType === 1 && child.tagName.toLowerCase() !== 'p') {
-                        // If the child element doesn't contain a <p>, remove it
                         if (!child.querySelector('p')) {
                             child.remove();
                         } else {
-                            // If it does contain a <p>, apply the function recursively
                             removeNonPElements(child);
                         }
                     }
                 });
             }
             removeNonPElements(document.querySelector("#articlecontent"));
+        } catch (error) {
+            window.location.href = articleUrl;
+        }
+        })
+        .catch(error => {
+            window.location.href = articleUrl;
         });
 }
 

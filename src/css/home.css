@@ -100,7 +100,6 @@ main {
             border-radius: 6px;
             color: white;
             text-decoration: none;
-
             .headline {
                 font-weight: bold;
                 font-size: 16px;
@@ -125,6 +124,10 @@ main {
             }
         }
 
+        .article:visited {
+            color: #888888 !important;
+        }
+
         .article:hover {
             background-color: rgba(255, 255, 255, 0.08);
         }
@@ -141,6 +144,22 @@ main {
             padding-top: 4px;
             font-size: 14px;
             color: rgb(158, 158, 158);
+        }
+        input {
+            background-color: #202020;
+            border-radius: 8px;
+            padding: 10px;
+            border: none;
+            color: white;
+            outline: none;
+        }
+        select {
+            background-color: #202020;
+            border-radius: 8px;
+            padding: 10px;
+            border: none;
+            color: white;
+            outline: none;
         }
     }
 
