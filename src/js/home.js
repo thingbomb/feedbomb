@@ -166,15 +166,15 @@ async function getSavedFeeds() {
             document.querySelector(".feed-list").appendChild(addFeedButton);
         }
     }
-    if (!document.querySelector(".feed-item.import-ompl")) {
-        let importOmplButton = document.createElement("input");
-        importOmplButton.type = "file";
-        importOmplButton.accept = ".opml";
-        importOmplButton.id = "import-ompl";
-        importOmplButton.addEventListener("change", addFeed);
-        importOmplButton.style.display = "none";
-        document.querySelector(".feed-list").appendChild(importOmplButton);
-        importOmplButton.addEventListener("change", function(event) {
+    if (!document.querySelector(".feed-item.import-opml")) {
+        let importOpmlButton = document.createElement("input");
+        importOpmlButton.type = "file";
+        importOpmlButton.accept = ".opml";
+        importOpmlButton.id = "import-opml";
+        importOpmlButton.addEventListener("change", addFeed);
+        importOpmlButton.style.display = "none";
+        document.querySelector(".feed-list").appendChild(importOpmlButton);
+        importOpmlButton.addEventListener("change", function(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
@@ -188,16 +188,16 @@ async function getSavedFeeds() {
         });
         let buttonLabel = document.createElement("label")
         buttonLabel.innerHTML = "Import OPML"
-        buttonLabel.className = "feed-item import-ompl"
-        buttonLabel.setAttribute("for", "import-ompl")
-        buttonLabel.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-200h80v-167l64 64 56-57-160-160-160 160 57 56 63-63v167ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/></svg><div class="spacer"></div><span>Import OMPL</span>'
+        buttonLabel.className = "feed-item import-opml"
+        buttonLabel.setAttribute("for", "import-opml")
+        buttonLabel.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-200h80v-167l64 64 56-57-160-160-160 160 57 56 63-63v167ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"/></svg><div class="spacer"></div><span>Import OPML</span>'
         document.querySelector(".feed-list").appendChild(buttonLabel);
     }
 }
 
 async function addFeedURL() {
     let url = document.getElementById("feed-url").value;
-    if (url) {
+    if (url) { 
         if (url.startsWith("r/") || url.startsWith("/r/")) {
             const subreddit = url.split("r/")[1];
             url = `https://www.reddit.com/r/${subreddit}/.rss`;
