@@ -76,5 +76,5 @@ This project is licensed under the MIT License. See the [LICENSE](https://github
 
 We welcome contributions! If you have suggestions or improvements, please:
 
-- **Open an Issue**: [Create an issue](https://github.com/georg-stone/quicktodo/issues).
-- **Submit a Pull Request**: [Submit a pull request](https://github.com/georg-stone/quicktodo/pulls).
+- **Open an Issue**: [Create an issue](https://github.com/Thingbomb/Feedbomb/issues).
+- **Submit a Pull Request**: [Submit a pull request](https://github.com/Thingbomb/Feedbomb/pulls).
