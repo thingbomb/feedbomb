@@ -10,7 +10,8 @@ const FILES_TO_CACHE = [
     '/js/reader.js',
     '/assets/masked_logo.png',
     '/read/index.html',
-    '/404.html'
+    '/404.html',
+    '/assets/poster.png'
 ];
 
 self.addEventListener('install', event => {
