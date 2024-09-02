@@ -37,6 +37,17 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+    const requestUrl = new URL(event.request.url);
+    const sameOrigin = requestUrl.origin === location.origin;
+
+    if (!sameOrigin) {
+        event.respondWith(
+            fetch(event.request)
+                .catch(() => caches.match('/404.html'))
+        );
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then(cachedResponse => {
@@ -55,9 +66,7 @@ self.addEventListener('fetch', event => {
                         }
                         return networkResponse;
                     })
-                    .catch(() => {
-                        return caches.match('/404.html');
-                    });
+                    .catch(() => caches.match('/404.html'));
             })
     );
 });
