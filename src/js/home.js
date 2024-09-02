@@ -1,6 +1,19 @@
 let allFeeds = [];
 let currentFilter = "all+posts";
 
+function cleanUpExpiredCache() {
+    const cache = localStorage;
+    for (let i = 0; i < cache.length; i++) {
+        const key = cache.key(i);
+        const value = JSON.parse(cache.getItem(key));
+        if (value.expire) {
+        if (value.expire < Date.now()) {
+            cache.removeItem(key);
+        }
+    }
+    }
+}
+
 function decodeHtmlEntities(str) {
     return str
         .replaceAll('&lt;', '<')
@@ -32,6 +45,8 @@ let feedsFailedToLoad = 0;
 function fetchFeed(url) {
     return new Promise(async (resolve, reject) => {
         try {
+            let text;
+            if (!localStorage.getItem(url)) {
             const response = await fetch('https://us-central1-awesomerssfeedreader.cloudfunctions.net/getFeed?url=' + url);
             if (!response.ok) {
                 feedsFailedToLoad++;
@@ -39,7 +54,15 @@ function fetchFeed(url) {
                 reject([]);
                 return;
             }
-            const text = await response.text();
+            text = await response.text();
+            localStorage.setItem(url, JSON.stringify({
+                expire: Date.now() + 30 * 60 * 1000,
+                data: text
+            }))
+        } else {
+            const data = localStorage.getItem(url);
+            text = JSON.parse(data).data;
+        }
 
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(text, "application/xml");
@@ -339,3 +362,13 @@ document.getElementById("search").addEventListener("keyup", function (event) {
 });
 
 getSavedFeeds();
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, error => {
+            console.log('ServiceWorker registration failed: ', error);
+        });
+    });
+}
