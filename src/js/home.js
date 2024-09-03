@@ -362,9 +362,3 @@ document.getElementById("search").addEventListener("keyup", function (event) {
 });
 
 getSavedFeeds();
-
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then(function(registration) {
-        console.log('Service Worker Registered');
-    });
-}
