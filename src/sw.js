@@ -18,38 +18,31 @@ const urlsToCache = [
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+      .then(cache => cache.addAll(urlsToCache))
   );
 });
 
 self.addEventListener('fetch', event => {
-  const requestUrl = new URL(event.request.url);
-
-  if (requestUrl.origin === location.origin) {
-    event.respondWith(
-      caches.match(event.request)
-        .then(response => {
-          if (response) {
-            return response;
-          }
-          return fetch(event.request)
-            .then(networkResponse => {
-              if (!networkResponse || networkResponse.status !== 200) {
-                return caches.match('/offline.html');
-              }
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request)
+          .then(networkResponse => {
+            if (networkResponse && networkResponse.status === 200) {
               return caches.open(CACHE_NAME)
                 .then(cache => {
                   cache.put(event.request, networkResponse.clone());
                   return networkResponse;
                 });
-            });
-        }).catch(() => caches.match('/offline.html'))
-    );
-  } else {
-    event.respondWith(fetch(event.request));
-  }
+            } else {
+              return caches.match('/offline.html');
+            }
+          });
+      }).catch(() => caches.match('/offline.html'))
+  );
 });
 
 self.addEventListener('activate', event => {
@@ -58,7 +51,7 @@ self.addEventListener('activate', event => {
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
+          if (!cacheWhitelist.includes(cacheName)) {
             return caches.delete(cacheName);
           }
         })
@@ -66,3 +59,4 @@ self.addEventListener('activate', event => {
     })
   );
 });
+
