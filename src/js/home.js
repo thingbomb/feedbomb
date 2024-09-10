@@ -113,7 +113,6 @@ function fetchFeed(url) {
 
             resolve(feedItems);
         } catch (error) {
-            alert()
             console.error("Failed to fetch the feed:", error);
             reject([]);
         }

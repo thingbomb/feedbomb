@@ -237,11 +237,6 @@ main {
 
     .content {
         padding: 10px;
-
-        #input-box-container {
-            display: flex;
-            gap: 0px;
-
             input {
                 background-color: #202020;
                 border-top-left-radius: 8px;
@@ -266,7 +261,6 @@ main {
                 color: white;
             }
         }
-    }
 }
 
 .dateMarker {
