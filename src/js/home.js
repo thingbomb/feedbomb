@@ -46,7 +46,7 @@ function fetchFeed(url) {
     return new Promise(async (resolve, reject) => {
         try {
             let text;
-            //if (!localStorage.getItem(url) || JSON.parse(localStorage.getItem(url)).expire < Date.now()) {
+            if (!localStorage.getItem(url) || JSON.parse(localStorage.getItem(url)).expire < Date.now()) {
             const response = await fetch('https://us-central1-awesomerssfeedreader.cloudfunctions.net/getFeed?url=' + url);
             const responseText = await response.text();
             if (!response.ok || !responseText.startsWith("<?xml")) {
@@ -59,10 +59,10 @@ function fetchFeed(url) {
                 expire: Date.now() + 30 * 60 * 1000,
                 data: text
             }))
-        //} else {
-            //const data = localStorage.getItem(url);
-            //text = JSON.parse(data).data;
-        //}
+        } else {
+            const data = localStorage.getItem(url);
+            text = JSON.parse(data).data;
+        }
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(responseText, "application/xml");
             let feedTitle = xmlDoc.querySelector("title") ? xmlDoc.querySelector("title").textContent : "";
