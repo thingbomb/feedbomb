@@ -46,7 +46,6 @@ function fetchFeed(url) {
     return new Promise(async (resolve, reject) => {
         let responseText;
         try {
-            let text;
             if (!localStorage.getItem(url) || JSON.parse(localStorage.getItem(url)).expire < Date.now()) {
             const response = await fetch('https://us-central1-awesomerssfeedreader.cloudfunctions.net/getFeed?url=' + url);
             responseText = await response.text();
@@ -58,7 +57,7 @@ function fetchFeed(url) {
             }
             localStorage.setItem(url, JSON.stringify({
                 expire: Date.now() + 30 * 60 * 1000,
-                data: text
+                data: responseText
             }))
         } else {
             const data = localStorage.getItem(url);
