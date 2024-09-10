@@ -44,11 +44,12 @@ let feedsFailedToLoad = 0;
 
 function fetchFeed(url) {
     return new Promise(async (resolve, reject) => {
+        let responseText;
         try {
             let text;
             if (!localStorage.getItem(url) || JSON.parse(localStorage.getItem(url)).expire < Date.now()) {
             const response = await fetch('https://us-central1-awesomerssfeedreader.cloudfunctions.net/getFeed?url=' + url);
-            const responseText = await response.text();
+            responseText = await response.text();
             if (!response.ok || !responseText.startsWith("<?xml")) {
                 feedsFailedToLoad++;
                 document.getElementById("status").innerHTML = `Failed to load ${feedsFailedToLoad} ${feedsFailedToLoad === 1 ? "feed" : "feeds"}`;
