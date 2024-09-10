@@ -1,8 +1,16 @@
-let queryParams = new URLSearchParams(window.location.search);
-let articleUrl = queryParams.get("url");
+let articleUrl;
+try {
+articleUrl = atob(window.location.pathname.split("/")[2]);
+} catch (error) {
+    if (window.location.pathname.split("/")[2].startsWith("http")) {
+        articleUrl = window.location.pathname.split("/")[2];
+    } else {
+    articleUrl = `https://${window.location.pathname.split("/")[2]}`;
+    }
+}
 
 function fetchArticle(url) {
-    fetch('https://us-central1-awesomerssfeedreader.cloudfunctions.net/fetchArticleText?url=' + url)
+    fetch('https://us-central1-awesomerssfeedreader.cloudfunctions.net/fetchArticleText?url=' + articleUrl)
         .then(response => response.text())
         .then(text => {
             try {
@@ -28,11 +36,11 @@ function fetchArticle(url) {
             }
             removeNonPElements(document.querySelector("#articlecontent"));
         } catch (error) {
-            window.location.href = articleUrl;
+            window.location.href = articleUrl
         }
         })
         .catch(error => {
-            window.location.href = articleUrl;
+            window.location.href = articleUrl
         });
 }
 

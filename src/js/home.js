@@ -46,32 +46,31 @@ function fetchFeed(url) {
     return new Promise(async (resolve, reject) => {
         try {
             let text;
-            if (!localStorage.getItem(url)) {
+            //if (!localStorage.getItem(url) || JSON.parse(localStorage.getItem(url)).expire < Date.now()) {
             const response = await fetch('https://us-central1-awesomerssfeedreader.cloudfunctions.net/getFeed?url=' + url);
-            if (!response.ok) {
+            const responseText = await response.text();
+            if (!response.ok || !responseText.startsWith("<?xml")) {
                 feedsFailedToLoad++;
                 document.getElementById("status").innerHTML = `Failed to load ${feedsFailedToLoad} ${feedsFailedToLoad === 1 ? "feed" : "feeds"}`;
                 reject([]);
                 return;
             }
-            text = await response.text();
             localStorage.setItem(url, JSON.stringify({
                 expire: Date.now() + 30 * 60 * 1000,
                 data: text
             }))
-        } else {
-            const data = localStorage.getItem(url);
-            text = JSON.parse(data).data;
-        }
-
+        //} else {
+            //const data = localStorage.getItem(url);
+            //text = JSON.parse(data).data;
+        //}
             const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(text, "application/xml");
+            const xmlDoc = parser.parseFromString(responseText, "application/xml");
             let feedTitle = xmlDoc.querySelector("title") ? xmlDoc.querySelector("title").textContent : "";
             let items = xmlDoc.querySelectorAll("item, entry") || xmlDoc.querySelector("rss").xmlDoc.querySelector("channel").querySelectorAll("item, entry");
             let icon = `<img height="24" src="https://logo.clearbit.com/${url.split("/")[2]}" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAgAB/WRJ4pQAAAAASUVORK5CYII='">`
 
             if (!document.querySelector(`.feed-item[data-feed-title="${feedTitle}"]`)) {
-                document.querySelector(".feed-list").innerHTML += `<button class="feed-item" data-feed-title="${feedTitle}" onclick="filterFeeds('${feedTitle}')">${icon}<div class="spacer"></div><span>${feedTitle}</span></button>`;
+                document.querySelector(".feed-list").innerHTML += `<button class="feed-item" oncontextmenu='if (confirm("Are you sure you want to delete this feed?")) { removeFeed("${url}"); } else { return false; }' data-feed-title="${feedTitle}" onclick="filterFeeds('${feedTitle}')">${icon}<div class="spacer"></div><span>${feedTitle}</span></button>`;
             }
 
             let feedItems = [];
@@ -114,6 +113,7 @@ function fetchFeed(url) {
 
             resolve(feedItems);
         } catch (error) {
+            alert()
             console.error("Failed to fetch the feed:", error);
             reject([]);
         }
@@ -287,12 +287,12 @@ async function filterFeeds(feedTitle, searchTerm) {
             lastDate = new Date(feed.pubDate);
             let newFeedItem = document.createElement("a")
             newFeedItem.className = "article"
-            newFeedItem.href = `read/index.html?url=${feed.link}`
+            newFeedItem.href = `read/${btoa(feed.link)}`
             newFeedItem.innerHTML = `<img src="${feed.image}" class="thumbnail">
             <div class="spacer"></div>
             <div class="content">
-                <span class="headline">${feed.title}</span>
-                <span class="text">by ${feed.author} / ${timeDifference(new Date(), new Date(feed.pubDate))}<br><br>${feed.description ? feed.description : ""}</span>
+                <span class="headline">${DOMPurify.sanitize(feed.title)}</span>
+                <span class="text">by ${DOMPurify.sanitize(feed.author)} / ${timeDifference(new Date(), new Date(feed.pubDate))}<br><br>${DOMPurify.sanitize(feed.description ? feed.description : "")}</span>
             </div>`
             document.getElementById("feed-content").appendChild(newFeedItem)
         });
@@ -362,3 +362,15 @@ document.getElementById("search").addEventListener("keyup", function (event) {
 });
 
 getSavedFeeds();
+
+function removeFeed(url) {
+    if (localStorage.getItem(url)) {
+        localStorage.removeItem(url);
+    }
+    if (localStorage.getItem("savedFeeds")) {
+        let curSavedFeeds = JSON.parse(localStorage.getItem("savedFeeds"));
+        curSavedFeeds = curSavedFeeds.filter(feed => feed !== url);
+        localStorage.setItem("savedFeeds", JSON.stringify(curSavedFeeds));
+        window.location.reload();
+    }
+}
