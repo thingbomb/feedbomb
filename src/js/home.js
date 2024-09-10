@@ -61,7 +61,7 @@ function fetchFeed(url) {
             }))
         } else {
             const data = localStorage.getItem(url);
-            text = JSON.parse(data).data;
+            responseText = JSON.parse(data).data;
         }
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(responseText, "application/xml");
