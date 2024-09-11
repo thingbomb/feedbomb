@@ -7,10 +7,10 @@ function cleanUpExpiredCache() {
         const key = cache.key(i);
         const value = JSON.parse(cache.getItem(key));
         if (value.expire) {
-        if (value.expire < Date.now()) {
-            cache.removeItem(key);
+            if (value.expire < Date.now()) {
+                cache.removeItem(key);
+            }
         }
-    }
     }
 }
 
@@ -50,22 +50,22 @@ function fetchFeed(url) {
         let responseText;
         try {
             if (!localStorage.getItem(url) || JSON.parse(localStorage.getItem(url)).expire < Date.now()) {
-            const response = await fetch('https://us-central1-awesomerssfeedreader.cloudfunctions.net/getFeed?url=' + url);
-            responseText = await response.text();
-            if (!response.ok || !responseText.startsWith("<?xml")) {
-                feedsFailedToLoad++;
-                document.getElementById("status").innerHTML = `Failed to load ${feedsFailedToLoad} ${feedsFailedToLoad === 1 ? "feed" : "feeds"}`;
-                reject([]);
-                return;
+                const response = await fetch('https://us-central1-awesomerssfeedreader.cloudfunctions.net/getFeed?url=' + url);
+                responseText = await response.text();
+                if (!response.ok || !responseText.startsWith("<?xml")) {
+                    feedsFailedToLoad++;
+                    document.getElementById("status").innerHTML = `Failed to load ${feedsFailedToLoad} ${feedsFailedToLoad === 1 ? "feed" : "feeds"}`;
+                    reject([]);
+                    return;
+                }
+                localStorage.setItem(url, JSON.stringify({
+                    expire: Date.now() + 30 * 60 * 1000,
+                    data: responseText
+                }))
+            } else {
+                const data = localStorage.getItem(url);
+                responseText = JSON.parse(data).data;
             }
-            localStorage.setItem(url, JSON.stringify({
-                expire: Date.now() + 30 * 60 * 1000,
-                data: responseText
-            }))
-        } else {
-            const data = localStorage.getItem(url);
-            responseText = JSON.parse(data).data;
-        }
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(responseText, "application/xml");
             let feedTitle = xmlDoc.querySelector("title") ? xmlDoc.querySelector("title").textContent : "";
@@ -73,7 +73,38 @@ function fetchFeed(url) {
             let icon = `<img height="24" src="https://logo.clearbit.com/${url.split("/")[2]}" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAgAB/WRJ4pQAAAAASUVORK5CYII='">`
 
             if (!document.querySelector(`.feed-item[data-feed-title="${feedTitle}"]`)) {
-                document.querySelector(".feed-list").innerHTML += `<button class="feed-item" oncontextmenu='if (confirm("Are you sure you want to delete this feed?")) { removeFeed("${url}"); } else { return false; }' data-feed-title="${feedTitle}" onclick="filterFeeds('${feedTitle}')">${icon}<div class="spacer"></div><span>${feedTitle}</span></button>`;
+                const feedList = document.querySelector(".feed-list");
+
+                const button = document.createElement("button");
+                button.className = "feed-item";
+                button.dataset.feedTitle = feedTitle;
+
+                const spacer = document.createElement("div");
+                spacer.className = "spacer";
+
+                const span = document.createElement("span");
+                span.textContent = feedTitle;
+
+                const icon = document.createElement("img");
+                icon.src = `https://logo.clearbit.com/${url.split("/")[2]}`;
+                icon.height = 24;
+
+                button.appendChild(icon);
+                button.appendChild(spacer);
+                button.appendChild(span);
+
+                button.addEventListener("contextmenu", (event) => {
+                    event.preventDefault();
+                    if (confirm("Are you sure you want to delete this feed?")) {
+                        removeFeed(url);
+                    }
+                });
+
+                button.addEventListener("click", () => {
+                    filterFeeds(feedTitle);
+                });
+
+                feedList.appendChild(button);
             }
 
             let feedItems = [];
@@ -199,11 +230,11 @@ async function getSavedFeeds() {
         importOpmlButton.addEventListener("change", addFeed);
         importOpmlButton.style.display = "none";
         document.querySelector(".feed-list").appendChild(importOpmlButton);
-        importOpmlButton.addEventListener("change", function(event) {
+        importOpmlButton.addEventListener("change", function (event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const parser = new DOMParser();
                     const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
                     const urls = extractURLs(xmlDoc);
@@ -222,7 +253,7 @@ async function getSavedFeeds() {
 
 async function addFeedURL() {
     let url = document.getElementById("feed-url").value;
-    if (url) { 
+    if (url) {
         if (url.startsWith("r/") || url.startsWith("/r/")) {
             const subreddit = url.split("r/")[1];
             url = `https://www.reddit.com/r/${subreddit}/.rss`;
@@ -256,8 +287,8 @@ async function filterFeeds(feedTitle, searchTerm) {
             document.getElementById("feedTitle").innerHTML = feedTitle == "all+posts" ? "Home" : feedTitle;
             document.getElementById("category").style.display = "none";
         }
-    
-    
+
+
         copiedArray.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
         document.querySelector("#feed-content").innerHTML = "";
         let lastDate;

@@ -20,7 +20,7 @@ input,
 select,
 textarea,
 button {
-    font-family: InterVariable,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji",sans-serif;
+    font-family: InterVariable, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji", sans-serif;
 }
 
 h1,
@@ -51,6 +51,7 @@ h6 {
 
 header {
     display: flex;
+
     #hide-button {
         width: 30px;
         height: 30px;
@@ -65,6 +66,7 @@ header {
         color: rgba(244, 244, 244, 0.9);
         margin: 8px 16px;
     }
+
     #input-box {
         background-color: rgba(244, 244, 244, 0.06);
         box-shadow: rgba(244, 244, 244, 0.09) 0px 0px 0px 1px inset;
@@ -81,11 +83,13 @@ header {
         margin-right: 16px;
         flex: 1;
     }
+
     #input-box svg {
         color: rgba(244, 244, 244, 0.65);
         height: 20px;
         width: 20px;
     }
+
     input {
         background-color: transparent;
         border: none;
@@ -94,6 +98,7 @@ header {
         padding-left: 6px;
         flex: 1;
     }
+
     input::placeholder {
         color: rgba(244, 244, 244, 0.35);
     }
@@ -180,6 +185,7 @@ main {
             border-radius: 6px;
             color: white;
             text-decoration: none;
+
             .headline {
                 font-weight: bold;
                 font-size: 16px;
@@ -225,6 +231,7 @@ main {
             font-size: 14px;
             color: rgb(158, 158, 158);
         }
+
         select {
             background-color: #202020;
             border-radius: 8px;
@@ -237,30 +244,31 @@ main {
 
     .content {
         padding: 10px;
-            input {
-                background-color: #202020;
-                border-top-left-radius: 8px;
-                border-bottom-left-radius: 8px;
-                padding: 10px;
-                border: none;
-                color: white;
-                outline: none;
-            }
 
-            input::placeholder {
-                color: #333;
-                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            }
-
-            button {
-                background-color: #202020;
-                border-top-right-radius: 8px;
-                border-bottom-right-radius: 8px;
-                padding: 10px;
-                border: none;
-                color: white;
-            }
+        input {
+            background-color: #202020;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+            padding: 10px;
+            border: none;
+            color: white;
+            outline: none;
         }
+
+        input::placeholder {
+            color: #333;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        button {
+            background-color: #202020;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            padding: 10px;
+            border: none;
+            color: white;
+        }
+    }
 }
 
 .dateMarker {
