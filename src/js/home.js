@@ -43,6 +43,10 @@ function areDatesOnTheSameDay(date1, date2) {
         date1Parts.day === date2Parts.day;
 }
 
+function removeEscapeCharacters(str) {
+    return str.replaceAll("\\", "");
+}
+
 let feedsFailedToLoad = 0;
 
 function fetchFeed(url) {
@@ -85,9 +89,9 @@ function fetchFeed(url) {
                 const span = document.createElement("span");
                 span.textContent = feedTitle;
 
-                const icon = document.createElement("img");
-                icon.src = `https://logo.clearbit.com/${url.split("/")[2]}`;
-                icon.height = 24;
+                const icon = document.createElement("img")
+                icon.src = `https://logo.clearbit.com/${encodeURIComponent(url.split("/")[2])}`
+                icon.className = "icon"
 
                 button.appendChild(icon);
                 button.appendChild(spacer);

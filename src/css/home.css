@@ -138,7 +138,7 @@ header {
         max-width: 100%;
     }
 
-    .feed-item img {
+    .feed-item .icon {
         border-radius: 6px;
         height: 20px;
     }
