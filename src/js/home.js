@@ -15,12 +15,15 @@ function cleanUpExpiredCache() {
 }
 
 function decodeHtmlEntities(str) {
-    return str
-        .replaceAll('&lt;', '<')
-        .replaceAll('&gt;', '>')
-        .replaceAll('&amp;', '&')
-        .replaceAll('&quot;', '"')
-        .replaceAll('&#39;', "'");
+    const entities = {
+        '&lt;': '<',
+        '&gt;': '>',
+        '&amp;': '&',
+        '&quot;': '"',
+        '&#39;': "'"
+    };
+
+    return str.replace(/&(lt|gt|amp|quot|#39);/g, (match, p1) => entities[match] || match);
 }
 
 function areDatesOnTheSameDay(date1, date2) {
@@ -84,7 +87,7 @@ function fetchFeed(url) {
                 let potentialImage;
                 if (content.innerHTML) {
                     placeholder.innerHTML = decodeHtmlEntities(content.innerHTML);
-                    potentialImage = (item.getElementsByTagName("media:thumbnail").src) || (placeholder.querySelector("img") ? placeholder.querySelector("img").src : `https://logo.clearbit.com/${url.split("/")[2]}`);
+                    potentialImage = (item.getElementsByTagName("media:thumbnail").src || item.getElementsByTagName("media:content")[0]?.getAttribute("url")) || (placeholder.querySelector("img") ? placeholder.querySelector("img").src : `https://logo.clearbit.com/${url.split("/")[2]}`);
                 } else {
                     placeholder.innerHTML = description ? description : new Date(item.querySelector("pubDate, published") ? item.querySelector("pubDate, published").textContent : "").toDateString();
                     potentialImage = item.getElementsByTagName("media:thumbnail")?.url || `https://logo.clearbit.com/${url.split("/")[2]}`;
