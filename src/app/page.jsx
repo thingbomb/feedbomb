@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LucideHome, LucidePlus } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [feedsJSON, setFeedsJSON] = useState([]);
@@ -23,7 +22,6 @@ export default function Home() {
   const [selector, setSelector] = useState("all_posts");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const router = useRouter();
 
   async function parseRSSFeed(xmlString, url) {
     let feed = {};
