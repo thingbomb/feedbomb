@@ -63,8 +63,7 @@ function fetchFeed(url) {
         JSON.parse(localStorage.getItem(url)).expire < Date.now()
       ) {
         const response = await fetch(
-          "https://us-central1-awesomerssfeedreader.cloudfunctions.net/getFeed?url=" +
-            url
+          "/api/fetchFeed?url=" + encodeURIComponent(url)
         );
         responseText = await response.text();
         if (!response.ok || !responseText.startsWith("<?xml")) {
