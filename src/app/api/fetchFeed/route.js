@@ -8,6 +8,10 @@ export async function GET(req) {
     return new Response('Missing "url" parameter', { status: 400 });
   }
 
+  if (url.endsWith("/api/fetchFeed")) {
+    return new Response("nice try", { status: 400 });
+  }
+
   try {
     const response = await fetch(url);
 
