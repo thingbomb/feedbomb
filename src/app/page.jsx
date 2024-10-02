@@ -280,7 +280,7 @@ export default function Home() {
         </header>
         <div
           className={
-            "grid grid-rows-1 h-full w-full grid-container" +
+            "grid grid-rows-1 h-full w-full grid-container " +
             (sidebarOpen
               ? "grid-cols-[244px_calc(100vw_-_244px)] "
               : "grid-cols-[0px_calc(100vw_-_0px)])")
