@@ -1,6 +1,6 @@
 # Feedbomb
 
-Feedbomb is a simple and powerful RSS reader for the web. It is free, open-source, and supports Progressive Web Apps (PWA). 
+Feedbomb is a simple and powerful RSS reader for the web. It is free, open-source, and supports Progressive Web Apps (PWA).
 
 ## Features
 
@@ -21,52 +21,12 @@ Feedbomb is a simple and powerful RSS reader for the web. It is free, open-sourc
 To self-host Feedbomb, follow these steps:
 
 1. **Clone the Repository**: Copy the `src` folder from this repository. This folder contains the client-side code only.
-2. **Set Up the Server**: The client-side code connects to server endpoints by default. Below is an example of how to set up our server endpoints using Express:
+2. **Start the Next.js App**: Start using the app by running:
 
-    ```js
-    const express = require('express');
-    const cors = require('cors');
-    const axios = require('axios');
-
-    const app = express();
-    const port = process.env.PORT || 3000;
-
-    app.use(cors());
-
-    app.get('/getFeed', (req, res) => {
-      const url = req.query.url;
-
-      if (!url) {
-        return res.status(400).send('URL is required');
-      }
-
-      axios.get(url)
-        .then(response => {
-          res.set('Content-Type', 'application/xml');
-          res.send(response.data);
-        })
-        .catch(error => {
-          res.status(500).send(error.toString());
-        });
-    });
-
-    app.get('/fetchArticleText', (req, res) => {
-      const url = req.query.url;
-      axios.get(url)
-        .then(response => {
-          res.set('Access-Control-Allow-Origin', '*');
-          res.set('Content-Type', 'text/plain');
-          res.send(response.data);
-        })
-        .catch(error => {
-          res.status(500).send(error);
-        });
-    });
-
-    app.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
-    });
-    ```
+```bash
+pnpm install
+pnpm run dev
+```
 
 ## License
 
