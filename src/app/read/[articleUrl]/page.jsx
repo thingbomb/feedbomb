@@ -2,7 +2,7 @@ import { extract } from "@extractus/article-extractor";
 
 const ArticlePage = async ({ params }) => {
   const { articleUrl } = params;
-  const decodedUrl = atob(decodeURIComponent(articleUrl));
+  const decodedUrl = atob(decodeURIComponent(articleUrl.replaceAll("-", "/")));
 
   let content = "";
   let title = "";

@@ -25,6 +25,7 @@
     "next": "14.2.14",
     "react": "^18",
     "react-dom": "^18",
+    "rss-parser": "^3.13.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7"
   },
