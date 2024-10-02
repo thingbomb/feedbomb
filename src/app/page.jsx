@@ -249,7 +249,12 @@ export default function Home() {
   console.log(allItems);
 
   return (
-    <div className="fixed inset-0 grid grid-rows-[50px_calc(100vh_-_50px)] h-full w-full">
+    <div
+      className={
+        "fixed inset-0 grid grid-rows-[50px_calc(100vh_-_50px)] h-full w-full" +
+        (sidebarOpen ? " sidebar-open" : "")
+      }
+    >
       <header className="p-4 flex justify-left gap-4 items-center select-none">
         <svg
           width="24"
@@ -273,7 +278,7 @@ export default function Home() {
       </header>
       <div
         className={
-          "grid grid-rows-1 h-full w-full " +
+          "grid grid-rows-1 h-full w-full grid-container" +
           (sidebarOpen
             ? "grid-cols-[244px_calc(100vw_-_244px)] "
             : "grid-cols-[0px_calc(100vw_-_0px)])")
@@ -322,7 +327,7 @@ export default function Home() {
                         );
                         return updatedFeeds;
                       });
-                      router.refresh();
+                      window.location.reload();
                     }
                   }}
                   onClick={() => {
@@ -381,7 +386,7 @@ export default function Home() {
             </ul>
           ) : null}
         </aside>
-        <div className="p-4 pt-1 overflow-y-auto custom-scrollbar h-full">
+        <div className="p-4 pt-1 overflow-y-auto custom-scrollbar h-full main-content">
           {allItems.length > 0 ? (
             <ul>
               {allItems

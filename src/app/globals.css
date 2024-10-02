@@ -154,3 +154,14 @@ img {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+@media (max-width: 768px) {
+  .sidebar-open {
+    .grid-container {
+      grid-template-columns: 100% 0px;
+    }
+    .main-content {
+      display: none;
+    }
+  }
+}
