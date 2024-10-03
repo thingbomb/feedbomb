@@ -22,6 +22,8 @@ export default function Home() {
   const [selector, setSelector] = useState("all_posts");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [pwaCardShowing, setPwaCardShowing] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   async function parseRSSFeed(xmlString, url) {
     let feed = {};
@@ -225,6 +227,12 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      if (localStorage.getItem("pwaCardDismissed") == "true") return;
+      e.preventDefault();
+      setPwaCardShowing(true);
+      setDeferredPrompt(e);
+    };
     const savedFeeds = localStorage.getItem("savedFeeds");
     if (savedFeeds) {
       const savedFeedsArray = JSON.parse(savedFeeds);
@@ -235,11 +243,31 @@ export default function Home() {
     } else {
       localStorage.setItem("savedFeeds", JSON.stringify([]));
     }
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     return () => {
       setFeedsJSON([]);
       setFeedsURLs([]);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
     };
   }, []);
+
+  const handleAddToHomeScreen = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to the A2HS prompt: ${outcome}`);
+
+    setDeferredPrompt(null);
+  };
+
+  const dismissPwaCard = async () => {
+    localStorage.setItem("pwaCardDismissed", true);
+    setPwaCardShowing(false);
+  };
 
   const allItems = feedsJSON
     .flatMap((feed) => feed.items)
@@ -250,6 +278,7 @@ export default function Home() {
     <>
       <head>
         <title>Feedbomb</title>
+        <link rel="manifest" href="/manifest.json" />
       </head>
       <div
         className={
@@ -392,41 +421,65 @@ export default function Home() {
           </aside>
           <div className="p-4 pt-1 overflow-y-auto custom-scrollbar h-full main-content">
             {allItems.length > 0 ? (
-              <ul>
-                {allItems
-                  .filter((item) => {
-                    if (selector === "all_posts") {
-                      return true;
-                    } else {
-                      return item.feedURL === selector;
-                    }
-                  })
-                  .map((item, index) => (
-                    <div key={index} className="mb-4">
-                      <a
-                        href={"/read/" + btoa(item.link).replaceAll("/", "-")}
-                        className="text-white grid grid-cols-[150px_calc(100%_-_150px)] gap-4 hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-3 rounded-lg "
-                      >
-                        <img
-                          src={item.image}
-                          className="w-[150px] rounded-lg"
-                        />
-                        <div className="right flex flex-col">
-                          <span className="font-bold text-[16px]">
-                            {item.title}
-                          </span>
-                          <span className="text-sm previewText">
-                            by {item.author || item.creator} |{" "}
-                            {timeDifference(new Date(), new Date(item.pubDate))}
-                            <br />
-                            <br />
-                            {item.description}
-                          </span>
-                        </div>
-                      </a>
+              <>
+                {pwaCardShowing ? (
+                  <div className="p-3">
+                    <div
+                      className={
+                        "bg-[#FFFFFF14] w-full rounded-lg flex justify-between items-center gap-2 p-3"
+                      }
+                    >
+                      <b>Add Feedbomb as a shortcut</b>
+                      <div className="flex gap-2">
+                        <Button onClick={handleAddToHomeScreen}>
+                          Add to Home Screen
+                        </Button>
+                        <Button variant="outline" onClick={dismissPwaCard}>
+                          Dismiss
+                        </Button>
+                      </div>
                     </div>
-                  ))}
-              </ul>
+                  </div>
+                ) : null}
+                <ul>
+                  {allItems
+                    .filter((item) => {
+                      if (selector === "all_posts") {
+                        return true;
+                      } else {
+                        return item.feedURL === selector;
+                      }
+                    })
+                    .map((item, index) => (
+                      <div key={index} className="mb-4">
+                        <a
+                          href={"/read/" + btoa(item.link).replaceAll("/", "-")}
+                          className="text-white grid grid-cols-[150px_calc(100%_-_150px)] gap-4 hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-3 rounded-lg "
+                        >
+                          <img
+                            src={item.image}
+                            className="w-[150px] rounded-lg"
+                          />
+                          <div className="right flex flex-col">
+                            <span className="font-bold text-[16px]">
+                              {item.title}
+                            </span>
+                            <span className="text-sm previewText">
+                              by {item.author || item.creator} |{" "}
+                              {timeDifference(
+                                new Date(),
+                                new Date(item.pubDate)
+                              )}
+                              <br />
+                              <br />
+                              {item.description}
+                            </span>
+                          </div>
+                        </a>
+                      </div>
+                    ))}
+                </ul>
+              </>
             ) : feedsURLs.length === 0 ? (
               <div className="text-left p-3">
                 <p className="text-gray-500">No feeds added yet</p>
