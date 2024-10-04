@@ -1,6 +1,8 @@
 import jschardet from "jschardet";
 import iconv from "iconv-lite";
 
+let cache = {};
+
 export async function POST(req) {
   const { urls } = await req.json();
   const responses = [];
@@ -19,33 +21,67 @@ export async function POST(req) {
           status: 400,
         });
       }
-      const response = await fetch(url);
+      async function handleUsingNetwork() {
+        const response = await fetch(url);
 
-      if (!response.ok) {
-        responses.push({
-          url: url,
-          xml: null,
-        });
-      } else {
-        const buffer = await response.arrayBuffer();
+        if (!response.ok) {
+          responses.push({
+            url: url,
+            xml: null,
+          });
+        } else {
+          const buffer = await response.arrayBuffer();
 
-        const detectedEncoding = jschardet.detect(Buffer.from(buffer));
-        let encoding = detectedEncoding.encoding || "utf-8";
+          const detectedEncoding = jschardet.detect(Buffer.from(buffer));
+          let encoding = detectedEncoding.encoding || "utf-8";
 
-        const decodedText = iconv.decode(Buffer.from(buffer), encoding);
+          const decodedText = iconv.decode(Buffer.from(buffer), encoding);
 
-        responses.push({
-          url: url,
-          xml: decodedText,
-        });
+          cache[url] = {
+            url: url,
+            xml: decodedText,
+            expire: Date.now() + 300000,
+          };
+
+          return responses.push({
+            url: url,
+            xml: decodedText,
+          });
+        }
       }
+      if (!cache[url]) {
+        await handleUsingNetwork();
+        if (i === urls.length - 1) {
+          return new Response(JSON.stringify(responses), {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+        }
+      } else {
+        if (cache[url].expire < Date.now()) {
+          await handleUsingNetwork();
+          if (i === urls.length - 1) {
+            return new Response(JSON.stringify(responses), {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+          }
+        } else {
+          responses.push({
+            url: url,
+            xml: cache[url].xml,
+          });
 
-      if (i === urls.length - 1) {
-        return new Response(JSON.stringify(responses), {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+          if (i === urls.length - 1) {
+            return new Response(JSON.stringify(responses), {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+          }
+        }
       }
     } catch (error) {
       console.error("There was an error while fetching this feed: ", error);
