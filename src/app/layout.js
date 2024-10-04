@@ -15,6 +15,18 @@ const geistMono = localFont({
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <title>Feedbomb</title>
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="og:title" content="Feedbomb" />
+        <meta
+          name="og:description"
+          content="A minimalistic, fast RSS-reader."
+        />
+        <meta name="og:image" content="/assets/poster.png" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#1D1E20] text-white dark`}
       >

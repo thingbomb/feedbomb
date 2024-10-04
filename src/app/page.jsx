@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LucideHome, LucidePlus } from "lucide-react";
+import { SettingsIcon } from "lucide-react";
 
 export default function Home() {
   const [feedsJSON, setFeedsJSON] = useState([]);
@@ -24,6 +25,7 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pwaCardShowing, setPwaCardShowing] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [rules, setRules] = useState([]);
 
   async function parseRSSFeed(xmlString, url) {
     let feed = {};
@@ -243,6 +245,14 @@ export default function Home() {
     } else {
       localStorage.setItem("savedFeeds", JSON.stringify([]));
     }
+    const savedRules = localStorage.getItem("filters");
+    if (savedRules) {
+      const savedRulesArray = JSON.parse(savedRules);
+      setRules(savedRulesArray);
+    } else {
+      localStorage.setItem("filters", JSON.stringify([]));
+      setRules([]);
+    }
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     return () => {
       setFeedsJSON([]);
@@ -253,6 +263,37 @@ export default function Home() {
       );
     };
   }, []);
+
+  function checkArticle(title, author) {
+    let isValid = true;
+
+    rules.forEach((rule) => {
+      const lowerTitle = title.toLowerCase();
+      const lowerValue = rule.value.toLowerCase();
+      const lowerAuthor = author.toLowerCase();
+
+      if (rule.rule === "title-contains" && lowerTitle.includes(lowerValue)) {
+        isValid = false;
+      }
+
+      if (
+        rule.rule === "title-starts-with" &&
+        lowerTitle.startsWith(lowerValue)
+      ) {
+        isValid = false;
+      }
+
+      if (rule.rule === "title-ends-with" && lowerTitle.endsWith(lowerValue)) {
+        isValid = false;
+      }
+
+      if (rule.rule === "author-is" && lowerAuthor.includes(lowerValue)) {
+        isValid = false;
+      }
+    });
+
+    return isValid;
+  }
 
   const handleAddToHomeScreen = async () => {
     if (!deferredPrompt) return;
@@ -276,36 +317,38 @@ export default function Home() {
 
   return (
     <>
-      <head>
-        <title>Feedbomb</title>
-        <link rel="manifest" href="/manifest.json" />
-      </head>
       <div
         className={
           "fixed inset-0 grid grid-rows-[50px_calc(100vh_-_50px)] h-full w-full" +
           (sidebarOpen ? " sidebar-open" : "")
         }
       >
-        <header className="p-4 flex justify-left gap-4 items-center select-none">
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            xmlns="http://www.w3.org/2000/svg"
-            className="cursor-pointer"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            <path
-              d="M5.474 19h13.052c.834 0 1.455-.202 1.863-.605.407-.403.611-1.008.611-1.815V7.42c0-.807-.204-1.412-.611-1.815C19.98 5.202 19.36 5 18.526 5H5.474c-.821 0-1.439.202-1.853.605C3.207 6.008 3 6.613 3 7.42v9.16c0 .807.207 1.412.621 1.815.414.403 1.032.605 1.853.605Zm.02-1.392c-.35 0-.62-.091-.81-.274-.191-.182-.287-.456-.287-.821V7.487c0-.359.096-.63.287-.816.19-.186.46-.279.81-.279h13.012c.35 0 .62.093.81.279.191.185.287.457.287.816v9.026c0 .365-.096.639-.287.821-.19.183-.46.274-.81.274H5.494Zm3.377.268h1.368V6.152H8.87v11.724ZM7.415 9.178a.45.45 0 0 0 .33-.149c.097-.1.146-.21.146-.331a.433.433 0 0 0-.146-.322.465.465 0 0 0-.33-.14H5.882a.465.465 0 0 0-.33.14.433.433 0 0 0-.146.322c0 .121.049.232.146.331a.45.45 0 0 0 .33.149h1.533Zm0 1.92a.457.457 0 0 0 .33-.144.459.459 0 0 0 .146-.336.433.433 0 0 0-.146-.321.465.465 0 0 0-.33-.14H5.882a.465.465 0 0 0-.33.14.433.433 0 0 0-.146.321c0 .128.049.24.146.336a.457.457 0 0 0 .33.144h1.533Zm0 1.92a.465.465 0 0 0 .33-.138.443.443 0 0 0 .146-.332.433.433 0 0 0-.146-.321.465.465 0 0 0-.33-.14H5.882a.465.465 0 0 0-.33.14.433.433 0 0 0-.146.321c0 .128.049.239.146.332.097.092.207.139.33.139h1.533Z"
-              fill="currentColor"
-            ></path>
-          </svg>
-          <span>
-            {selector == "all_posts"
-              ? "Home"
-              : feedsJSON[currentIndex].title.split(" - ")[0]}
-          </span>
+        <header className="p-4 flex justify-between gap-4 items-center select-none">
+          <div className="flex gap-4 items-center">
+            <button onClick={() => setSidebarOpen(!sidebarOpen)}>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+                className="cursor-pointer"
+              >
+                <path
+                  d="M5.474 19h13.052c.834 0 1.455-.202 1.863-.605.407-.403.611-1.008.611-1.815V7.42c0-.807-.204-1.412-.611-1.815C19.98 5.202 19.36 5 18.526 5H5.474c-.821 0-1.439.202-1.853.605C3.207 6.008 3 6.613 3 7.42v9.16c0 .807.207 1.412.621 1.815.414.403 1.032.605 1.853.605Zm.02-1.392c-.35 0-.62-.091-.81-.274-.191-.182-.287-.456-.287-.821V7.487c0-.359.096-.63.287-.816.19-.186.46-.279.81-.279h13.012c.35 0 .62.093.81.279.191.185.287.457.287.816v9.026c0 .365-.096.639-.287.821-.19.183-.46.274-.81.274H5.494Zm3.377.268h1.368V6.152H8.87v11.724ZM7.415 9.178a.45.45 0 0 0 .33-.149c.097-.1.146-.21.146-.331a.433.433 0 0 0-.146-.322.465.465 0 0 0-.33-.14H5.882a.465.465 0 0 0-.33.14.433.433 0 0 0-.146.322c0 .121.049.232.146.331a.45.45 0 0 0 .33.149h1.533Zm0 1.92a.457.457 0 0 0 .33-.144.459.459 0 0 0 .146-.336.433.433 0 0 0-.146-.321.465.465 0 0 0-.33-.14H5.882a.465.465 0 0 0-.33.14.433.433 0 0 0-.146.321c0 .128.049.24.146.336a.457.457 0 0 0 .33.144h1.533Zm0 1.92a.465.465 0 0 0 .33-.138.443.443 0 0 0 .146-.332.433.433 0 0 0-.146-.321.465.465 0 0 0-.33-.14H5.882a.465.465 0 0 0-.33.14.433.433 0 0 0-.146.321c0 .128.049.239.146.332.097.092.207.139.33.139h1.533Z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+            </button>
+            <span>
+              {selector == "all_posts"
+                ? "Home"
+                : feedsJSON[currentIndex].title.split(" - ")[0]}
+            </span>
+          </div>
+          <a href="/settings" className="text-white">
+            <SettingsIcon />
+          </a>
         </header>
         <div
           className={
@@ -444,10 +487,15 @@ export default function Home() {
                 <ul>
                   {allItems
                     .filter((item) => {
-                      if (selector === "all_posts") {
-                        return true;
+                      if (selector == "all_posts") {
+                        let check = checkArticle(item.title, item.author);
+                        console.log(check);
+                        return check;
                       } else {
-                        return item.feedURL === selector;
+                        return (
+                          item.feedURL === selector &&
+                          checkArticle(item.title, item.author)
+                        );
                       }
                     })
                     .map((item, index) => (
