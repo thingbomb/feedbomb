@@ -22,22 +22,23 @@ export async function POST(req) {
       const response = await fetch(url);
 
       if (!response.ok) {
-        return new Response("Failed to fetch the feed.", {
-          status: response.status,
+        responses.push({
+          url: url,
+          xml: null,
+        });
+      } else {
+        const buffer = await response.arrayBuffer();
+
+        const detectedEncoding = jschardet.detect(Buffer.from(buffer));
+        let encoding = detectedEncoding.encoding || "utf-8";
+
+        const decodedText = iconv.decode(Buffer.from(buffer), encoding);
+
+        responses.push({
+          url: url,
+          xml: decodedText,
         });
       }
-
-      const buffer = await response.arrayBuffer();
-
-      const detectedEncoding = jschardet.detect(Buffer.from(buffer));
-      let encoding = detectedEncoding.encoding || "utf-8";
-
-      const decodedText = iconv.decode(Buffer.from(buffer), encoding);
-
-      responses.push({
-        url: url,
-        xml: decodedText,
-      });
 
       if (i === urls.length - 1) {
         return new Response(JSON.stringify(responses), {

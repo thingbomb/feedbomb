@@ -154,8 +154,10 @@ export default function Home() {
         .then(async (data) => {
           for (let i = 0; i < data.length; i++) {
             let xml = data[i].xml;
-            let feed = await parseRSSFeed(xml, data[i].url);
-            setFeedsJSON((prev) => [...prev, feed]);
+            if (xml != null) {
+              let feed = await parseRSSFeed(xml, data[i].url);
+              setFeedsJSON((prev) => [...prev, feed]);
+            }
           }
         });
     } catch (error) {
@@ -225,6 +227,9 @@ export default function Home() {
 
   useEffect(() => {
     setRendered(true);
+    if (!localStorage.getItem("onboardingCompleted")) {
+      window.location.href = "/onboarding";
+    }
     const handleBeforeInstallPrompt = (e) => {
       if (localStorage.getItem("pwaCardDismissed") == "true") return;
       e.preventDefault();
@@ -500,6 +505,7 @@ export default function Home() {
                         >
                           <img
                             src={item.image}
+                            loading="lazy"
                             className="w-[150px] rounded-lg"
                           />
                           <div className="right flex flex-col">
