@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LucideHome, LucidePlus } from "lucide-react";
 import { SettingsIcon } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 
 export default function Home() {
   const [feedsJSON, setFeedsJSON] = useState([]);
@@ -26,6 +27,7 @@ export default function Home() {
   const [pwaCardShowing, setPwaCardShowing] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [rules, setRules] = useState([]);
+  const [rendered, setRendered] = useState(false);
 
   async function parseRSSFeed(xmlString, url) {
     let feed = {};
@@ -38,6 +40,7 @@ export default function Home() {
         ? xmlDoc.querySelector("title").textContent
         : "";
       feed.title = feedTitle;
+      feed.feedURL = url;
 
       let items =
         xmlDoc.querySelectorAll("item, entry") ||
@@ -138,31 +141,23 @@ export default function Home() {
     );
   }
 
-  async function fetchFeed(url) {
+  async function fetchFeeds(urls) {
     try {
-      if (
-        !localStorage.getItem(url) ||
-        JSON.parse(localStorage.getItem(url)).expire < Date.now()
-      ) {
-        const response = await fetch("/api/fetchFeed?url=" + url);
-        const text = await response.text();
-        localStorage.setItem(
-          url,
-          JSON.stringify({ text: text, url: url, expire: Date.now() + 300000 })
-        );
-        const feed = await parseRSSFeed(text, url);
-        feed.feedURL = url;
-        setFeedsJSON((prev) => [...prev, feed]);
-      } else {
-        console.log("Using cached feed");
-        const data = localStorage.getItem(url);
-        const feed = JSON.parse(data);
-        const text = feed.text;
-        const feedURL = feed.url;
-        const parsedFeed = await parseRSSFeed(text, feedURL);
-        parsedFeed.feedURL = url;
-        setFeedsJSON((prev) => [...prev, parsedFeed]);
-      }
+      fetch("/api/fetchFeeds", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ urls: urls }),
+      })
+        .then((response) => response.json())
+        .then(async (data) => {
+          for (let i = 0; i < data.length; i++) {
+            let xml = data[i].xml;
+            let feed = await parseRSSFeed(xml, data[i].url);
+            setFeedsJSON((prev) => [...prev, feed]);
+          }
+        });
     } catch (error) {
       console.error("Error fetching or parsing feed:", error);
     }
@@ -221,11 +216,11 @@ export default function Home() {
     setFeedsURLs((prev) => {
       const updatedFeeds = [...prev, validatedFeedURL];
       localStorage.setItem("savedFeeds", JSON.stringify(updatedFeeds));
-      fetchFeed(validatedFeedURL);
       return updatedFeeds;
     });
     setNewFeedURL("");
     setDialogOpen(false);
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -239,9 +234,7 @@ export default function Home() {
     if (savedFeeds) {
       const savedFeedsArray = JSON.parse(savedFeeds);
       setFeedsURLs(savedFeedsArray);
-      savedFeedsArray.forEach((feedUrl) => {
-        fetchFeed(feedUrl);
-      });
+      fetchFeeds(savedFeedsArray);
     } else {
       localStorage.setItem("savedFeeds", JSON.stringify([]));
     }
@@ -528,13 +521,13 @@ export default function Home() {
                     ))}
                 </ul>
               </>
-            ) : feedsURLs.length === 0 ? (
+            ) : feedsURLs.length === 0 && rendered ? (
               <div className="text-left p-3">
                 <p className="text-gray-500">No feeds added yet</p>
               </div>
             ) : (
-              <div className="text-left p-3">
-                <p className="text-gray-500">Loading articles...</p>
+              <div className="flex justify-center items-center p-3">
+                <LoaderCircle className="animate-spin" />
               </div>
             )}
           </div>
