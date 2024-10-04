@@ -502,7 +502,7 @@ export default function Home() {
                       <div key={index} className="mb-4">
                         <a
                           href={"/read/" + btoa(item.link).replaceAll("/", "-")}
-                          className="text-white grid grid-cols-[150px_calc(100%_-_150px)] gap-4 hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-3 rounded-lg "
+                          className="text-white grid grid-cols-[150px_calc(100%_-_150px)] gap-4 hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-3 rounded-lg visited:text-[gray] "
                         >
                           <img
                             src={item.image}
