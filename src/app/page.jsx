@@ -224,6 +224,7 @@ export default function Home() {
   };
 
   useEffect(() => {
+    setRendered(true);
     const handleBeforeInstallPrompt = (e) => {
       if (localStorage.getItem("pwaCardDismissed") == "true") return;
       e.preventDefault();
