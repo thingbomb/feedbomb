@@ -12,11 +12,6 @@ Feedbomb is a simple and powerful RSS reader for the web. It is free, open-sourc
 - **Filter out the bad stuff**: Feedbomb lets you create custom rules to filter out unwanted articles.
 - **Much more coming soon**
 
-## Usage
-
-1. **Access Feedbomb**: Go to [feedbomb.app](https://www.feedbomb.app).
-2. **Add Feeds**: Click "Add feed" in the sidebar to add RSS/Atom feeds.
-
 ## Self-Hosting
 
 To self-host Feedbomb, follow these steps:
