@@ -1,6 +1,6 @@
 # Feedbomb
 
-Feedbomb is a simple and powerful RSS reader for the web. It is free, open-source, and supports Progressive Web Apps (PWA).
+Feedbomb is a minimalistic, fast, and customizable RSS feed reader. Use on all your devices, create custom article filtering rules, and more, all with Feedbomb.
 
 ## Features
 
