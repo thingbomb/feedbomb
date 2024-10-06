@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { extract } from "@extractus/article-extractor";
 
 const ArticlePage = async ({ params }) => {
@@ -37,11 +38,23 @@ const ArticlePage = async ({ params }) => {
         />
         <meta name="og:image" content={image || ""} />
       </head>
-      <main className="max-w-4xl mx-auto p-4 bg-[#1D1E20] text-white rounded-lg mt-8">
+      <main className="max-w-4xl mx-auto p-4 bg-[#1D1E20] text-white rounded-lg mt-8 text-[18px] leading-relaxed">
         {isLoading ? (
           <p className="text-gray-500 text-center">Loading...</p>
         ) : error ? (
-          <p className="text-red-500 text-center">An error occurred: {error}</p>
+          <>
+            <b>We're sorry, but we couldn't process this article.</b>
+            <br />
+            <br />
+            <div className="flex gap-2">
+              <a href={decodedUrl}>
+                <Button>Read on original site</Button>
+              </a>
+              <a href="/" className="text-white">
+                <Button variant="outline">Back to home</Button>
+              </a>
+            </div>
+          </>
         ) : (
           <>
             <h1 className="text-3xl font-bold mb-2">{title}</h1>
@@ -50,6 +63,11 @@ const ArticlePage = async ({ params }) => {
               <em>{new Date(datePublished).toLocaleString()}</em>
               {ttr > 60 ? ` | ${(ttr - (ttr % 60)) / 60} min read` : ""}
             </p>
+            <a href={decodedUrl}>
+              <Button>Read on original site</Button>
+            </a>
+            <br />
+            <br />
             <article
               className="prose lg:prose-xl"
               dangerouslySetInnerHTML={{ __html: content }}

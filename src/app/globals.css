@@ -73,8 +73,19 @@
   }
 }
 
-p {
-  margin-bottom: 1rem;
+p,
+ul,
+ol {
+  margin: 0.75rem 0;
+}
+
+table {
+  margin: 1rem 0;
+}
+
+td {
+  padding: 1rem;
+  @apply border border-border;
 }
 
 a {
