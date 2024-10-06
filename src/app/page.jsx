@@ -28,6 +28,7 @@ export default function Home() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [rules, setRules] = useState([]);
   const [rendered, setRendered] = useState(false);
+  const [feeds, setFeeds] = useState([]);
 
   async function parseRSSFeed(xmlString, url) {
     let feed = {};
@@ -48,7 +49,13 @@ export default function Home() {
           .querySelector("rss")
           .querySelector("channel")
           .querySelectorAll("item, entry");
-
+      setFeeds((prev) => [
+        ...prev,
+        {
+          title: feedTitle,
+          feedURL: url,
+        },
+      ]);
       items.forEach((item) => {
         const title = item.querySelector("title")
           ? item.querySelector("title").textContent
@@ -109,7 +116,6 @@ export default function Home() {
           : dcCreatorElement
           ? dcCreatorElement.textContent
           : "";
-
         feedItems.push({
           title: title,
           link: link,
@@ -367,7 +373,7 @@ export default function Home() {
                 <button
                   className={
                     "flex gap-4 items-center cursor-pointer select-none hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-2 rounded-lg w-full " +
-                    (selector == "all_posts" ? " !bg-blue-500/40" : "")
+                    (selector == "all_posts" ? " !bg-[#7C3AED]" : "")
                   }
                   tabIndex={0}
                   onClick={() => {
@@ -378,13 +384,13 @@ export default function Home() {
                   <LucideHome className="w-6 h-6" />
                   <span>Home</span>
                 </button>
-                {feedsJSON.map((feed, index) => (
+                {feeds.map((feed, index) => (
                   <button
                     key={index}
                     tabIndex={0}
                     className={
                       "flex gap-4 items-center cursor-pointer select-none hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-2 rounded-lg w-full" +
-                      (selector == feed.feedURL ? " !bg-blue-500/40" : "")
+                      (selector == feed.feedURL ? " !bg-[#7C3AED]" : "")
                     }
                     onContextMenu={(e) => {
                       e.preventDefault();
