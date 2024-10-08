@@ -105,7 +105,9 @@ export default function App() {
           <h1 className="text-4xl font-bold mb-3">
             Pick some feeds to get started
           </h1>
-          <p className="text-lg text-gray-300">These feeds have been curated</p>
+          <p className="text-lg text-gray-300">
+            These feeds have been curated. You can always add more feeds later.
+          </p>
           <br />
           <ul className="grid grid-cols-1 gap-4 mb-4">
             {selections.map((feed, index) => (
