@@ -3,9 +3,6 @@ import ReadHistory from "@/components/ui/read-history";
 import { extract } from "@extractus/article-extractor";
 
 const ArticlePage = async ({ params }) => {
-  const { articleUrl } = params;
-  const decodedUrl = atob(decodeURIComponent(articleUrl.replaceAll("-", "/")));
-
   let content = "";
   let title = "";
   let datePublished = "";
@@ -14,8 +11,15 @@ const ArticlePage = async ({ params }) => {
   let isLoading = true;
   let ttr = 0;
   let image;
-
+  const { articleUrl } = params;
+  let decodedUrl;
   try {
+    decodedUrl = atob(decodeURIComponent(articleUrl.replaceAll("-", "/")));
+
+    if (!decodedUrl.startsWith("http")) {
+      decodedUrl = "https://" + decodedUrl;
+    }
+
     const article = await extract(decodedUrl);
     title = article.title;
     datePublished = article.published;
