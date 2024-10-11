@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import ReadHistory from "@/components/ui/read-history";
 import { extract } from "@extractus/article-extractor";
 
 const ArticlePage = async ({ params }) => {
@@ -75,6 +76,14 @@ const ArticlePage = async ({ params }) => {
           </>
         )}
       </main>
+      <ReadHistory
+        data={{
+          title: title,
+          link: decodedUrl,
+          pubDate: datePublished,
+          author: author,
+        }}
+      />
     </div>
   );
 };

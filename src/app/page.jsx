@@ -12,9 +12,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LucideHome, LucidePlus } from "lucide-react";
-import { SettingsIcon } from "lucide-react";
-import { LoaderCircle } from "lucide-react";
+import FeedItem from "@/components/ui/feed-item";
+import {
+  SettingsIcon,
+  LucideHome,
+  LucidePlus,
+  LoaderCircle,
+} from "lucide-react";
+import { History } from "lucide-react";
 
 export default function Home() {
   const [feedsJSON, setFeedsJSON] = useState([]);
@@ -29,6 +34,7 @@ export default function Home() {
   const [rules, setRules] = useState([]);
   const [rendered, setRendered] = useState(false);
   const [feeds, setFeeds] = useState([]);
+  const [readHistory, setReadHistory] = useState(null);
 
   async function parseRSSFeed(xmlString, url) {
     let feed = {};
@@ -40,8 +46,16 @@ export default function Home() {
       let feedTitle = xmlDoc.querySelector("title")
         ? xmlDoc.querySelector("title").textContent
         : "";
+
+      let feedIcon = xmlDoc.querySelector("link")
+        ? `https://logo.clearbit.com/${encodeURIComponent(
+            xmlDoc.querySelector("link").getAttribute("href").split("/")[2]
+          )}`
+        : `https://logo.clearbit.com/${encodeURIComponent(url.split("/")[2])}`;
       feed.title = feedTitle;
       feed.feedURL = url;
+      feed.icon = feedIcon;
+      feed.type = "feeds";
 
       let items =
         xmlDoc.querySelectorAll("item, entry") ||
@@ -54,6 +68,8 @@ export default function Home() {
         {
           title: feedTitle,
           feedURL: url,
+          icon: feedIcon,
+          type: "feeds",
         },
       ]);
       items.forEach((item) => {
@@ -230,7 +246,6 @@ export default function Home() {
     setDialogOpen(false);
     window.location.reload();
   };
-
   useEffect(() => {
     setRendered(true);
     if (!localStorage.getItem("onboardingCompleted")) {
@@ -247,6 +262,28 @@ export default function Home() {
       const savedFeedsArray = JSON.parse(savedFeeds);
       setFeedsURLs(savedFeedsArray);
       fetchFeeds(savedFeedsArray);
+
+      let readHistory = JSON.parse(localStorage.getItem("readHistory"));
+      if (readHistory) {
+        setReadHistory(readHistory);
+        let newFeed = {
+          title: "History",
+          type: "articles",
+          feedURL: "history",
+          icon: "https://logo.clearbit.com/feedbomb.app",
+          items: [],
+        };
+        for (let i = 0; i < readHistory.length; i++) {
+          let item = readHistory[i];
+          item["feedURL"] = "history";
+          newFeed.items.push(item);
+
+          if (i == readHistory.length - 1) {
+            setFeedsJSON((prev) => [...prev, newFeed]);
+            setFeeds((prev) => [...prev, newFeed]);
+          }
+        }
+      }
     } else {
       localStorage.setItem("savedFeeds", JSON.stringify([]));
     }
@@ -261,6 +298,7 @@ export default function Home() {
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     return () => {
       setFeedsJSON([]);
+      setFeeds([]);
       setFeedsURLs([]);
       window.removeEventListener(
         "beforeinstallprompt",
@@ -320,6 +358,7 @@ export default function Home() {
     .sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
   console.log(allItems);
 
+  console.log(readHistory);
   return (
     <>
       <div
@@ -364,107 +403,129 @@ export default function Home() {
           }
         >
           <aside
-            className={
-              "flex flex-col gap-4 p-4 " + (sidebarOpen ? "" : "hidden")
-            }
+            className={"flex flex-col p-4 " + (sidebarOpen ? "" : "hidden")}
           >
             {sidebarOpen ? (
-              <ul>
-                <button
-                  className={
-                    "flex gap-4 items-center cursor-pointer select-none hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-2 rounded-lg w-full " +
-                    (selector == "all_posts" ? " !bg-[#7C3AED]" : "")
-                  }
-                  tabIndex={0}
-                  onClick={() => {
-                    setSelector("all_posts");
-                    setCurrentIndex(0);
-                  }}
-                >
-                  <LucideHome className="w-6 h-6" />
-                  <span>Home</span>
-                </button>
-                {feeds.map((feed, index) => (
-                  <button
-                    key={index}
-                    tabIndex={0}
+              <>
+                <span className="text-gray-300">Feeds</span>
+                <ul>
+                  <FeedItem
                     className={
-                      "flex gap-4 items-center cursor-pointer select-none hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-2 rounded-lg w-full" +
-                      (selector == feed.feedURL ? " !bg-[#7C3AED]" : "")
+                      "flex gap-4 items-center cursor-pointer select-none hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-2 rounded-lg w-full " +
+                      (selector == "all_posts" ? " !bg-[#7C3AED]" : "")
                     }
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      let confirmation = confirm(
-                        "Are you sure you want to delete this feed?"
-                      );
-                      if (confirmation) {
-                        setFeedsURLs((prev) => {
-                          const updatedFeeds = prev.filter(
-                            (feedURL) => feedURL !== feed.feedURL
-                          );
-                          localStorage.setItem(
-                            "savedFeeds",
-                            JSON.stringify(updatedFeeds)
-                          );
-                          return updatedFeeds;
-                        });
-                        window.location.reload();
-                      }
-                    }}
+                    selector={selector}
+                    tabIndex={0}
                     onClick={() => {
-                      setSelector(feed.feedURL);
-                      setCurrentIndex(index);
+                      setSelector("all_posts");
+                      setCurrentIndex(0);
                     }}
                   >
-                    <img
-                      src={
-                        "https://logo.clearbit.com/" +
-                        encodeURIComponent(feed.feedURL.split("/")[2])
-                      }
-                      className="w-6 h-6 rounded-full"
-                    />
-                    <span className="textellipsis">
-                      {feed.title.split(" - ")[0]}
-                    </span>
-                  </button>
-                ))}
-                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                  <DialogTrigger asChild>
-                    <button
-                      variant="outline"
-                      className="flex gap-4 items-center cursor-pointer select-none hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-2 rounded-lg w-full"
-                    >
-                      <LucidePlus className="w-6 h-6" />
-                      <span>Add</span>
-                    </button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Add New RSS Feed</DialogTitle>
-                      <DialogDescription>
-                        Enter the URL of the RSS feed you want to add.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="feedUrl" className="text-right">
-                          Feed URL
-                        </Label>
-                        <Input
-                          id="feedUrl"
-                          value={newFeedURL}
-                          onChange={(e) => setNewFeedURL(e.target.value)}
-                          className="col-span-3"
-                          placeholder="https://example.com/rss"
-                        />
+                    <LucideHome className="w-6 h-6" />
+                    <span>Home</span>
+                  </FeedItem>
+                  {feeds.map((feed, index) => {
+                    if (feed.type == "feeds") {
+                      console.log(feed);
+                      return (
+                        <FeedItem
+                          key={index}
+                          tabIndex={0}
+                          selector={selector}
+                          url={feed.feedURL}
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            let confirmation = confirm(
+                              "Are you sure you want to delete this feed?"
+                            );
+                            if (confirmation) {
+                              setFeedsURLs((prev) => {
+                                const updatedFeeds = prev.filter(
+                                  (feedURL) => feedURL !== feed.feedURL
+                                );
+                                localStorage.setItem(
+                                  "savedFeeds",
+                                  JSON.stringify(updatedFeeds)
+                                );
+                                return updatedFeeds;
+                              });
+                              window.location.reload();
+                            }
+                          }}
+                          onClick={() => {
+                            setSelector(feed.feedURL);
+                            setCurrentIndex(index);
+                          }}
+                        >
+                          <img
+                            src={feed.icon}
+                            className="w-6 h-6 rounded-full"
+                          />
+                          <span className="textellipsis">
+                            {feed.title.split(" - ")[0]}
+                          </span>
+                        </FeedItem>
+                      );
+                    }
+                  })}
+                  <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                    <DialogTrigger asChild>
+                      <button
+                        variant="outline"
+                        className="flex gap-4 items-center cursor-pointer select-none hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-2 rounded-lg w-full"
+                      >
+                        <LucidePlus className="w-6 h-6" />
+                        <span>Add</span>
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Add New RSS Feed</DialogTitle>
+                        <DialogDescription>
+                          Enter the URL of the RSS feed you want to add.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="feedUrl" className="text-right">
+                            Feed URL
+                          </Label>
+                          <Input
+                            id="feedUrl"
+                            value={newFeedURL}
+                            onChange={(e) => setNewFeedURL(e.target.value)}
+                            className="col-span-3"
+                            placeholder="https://example.com/rss"
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <DialogFooter>
-                      <Button onClick={handleAddFeed}>Add Feed</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </ul>
+                      <DialogFooter>
+                        <Button onClick={handleAddFeed}>Add Feed</Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </ul>
+                <div className={readHistory ? "" : "hidden"}>
+                  <span className="text-gray-300">Articles</span>
+                  <ul>
+                    <FeedItem
+                      className={
+                        "flex gap-4 items-center cursor-pointer select-none hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-2 rounded-lg w-full " +
+                        (selector == "history" ? " !bg-[#7C3AED]" : "")
+                      }
+                      selector="history"
+                      tabIndex={0}
+                      onClick={() => {
+                        setSelector("history");
+                        setCurrentIndex(0);
+                      }}
+                    >
+                      <History className="w-6 h-6" />
+                      History
+                    </FeedItem>
+                  </ul>
+                </div>
+              </>
             ) : null}
           </aside>
           <div className="p-4 pt-1 overflow-y-auto custom-scrollbar h-full main-content">
@@ -492,7 +553,10 @@ export default function Home() {
                 <ul>
                   {allItems
                     .filter((item) => {
-                      if (selector == "all_posts") {
+                      if (
+                        selector == "all_posts" &&
+                        item.feedURL != "history"
+                      ) {
                         let check = checkArticle(item.title, item.author);
                         console.log(check);
                         return check;
