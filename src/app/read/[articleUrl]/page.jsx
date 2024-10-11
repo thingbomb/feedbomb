@@ -41,6 +41,11 @@ const ArticlePage = async ({ params }) => {
           name="description"
           content={`Read article by ${author} on ${datePublished || ""}`}
         />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={image} />
+        <meta name="image" content={image} />
         <meta name="og:image" content={image || ""} />
       </head>
       <main className="max-w-4xl mx-auto p-4 bg-[#1D1E20] text-white rounded-lg mt-8 text-[18px] leading-relaxed">
