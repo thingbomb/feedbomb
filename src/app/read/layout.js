@@ -1,3 +1,5 @@
+"use client";
+
 import localFont from "next/font/local";
 import "../globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
@@ -5,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { ModeToggle } from "@/components/ui/dark-toggle";
 import { SettingsIcon } from "lucide-react";
+import { ShareOptions } from "@/components/ui/share-options";
+import { usePathname } from "next/navigation";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -18,6 +22,7 @@ const geistMono = localFont({
 });
 
 export default function RootLayout({ children }) {
+  const pathname = usePathname();
   return (
     <html lang="en">
       <head>
@@ -43,6 +48,12 @@ export default function RootLayout({ children }) {
             </div>
             <div className="flex gap-2 items-center">
               <ModeToggle />
+              <ShareOptions
+                url={`${
+                  atob(pathname.split("/")[2]).replaceAll("-", "/") ||
+                  `https://feedbomb.app${pathname}`
+                }`}
+              />
               <a href="/settings" className="text-black dark:text-white">
                 <Button variant="outline" size="icon">
                   <SettingsIcon className="h-[1.2rem] w-[1.2rem]" />
