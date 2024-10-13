@@ -45,16 +45,18 @@ export default function Home() {
     try {
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(xmlString, "application/xml");
-
+      console.log(xmlDoc);
       let feedTitle = xmlDoc.querySelector("title")
         ? xmlDoc.querySelector("title").textContent
         : "";
 
       let feedIcon = xmlDoc.querySelector("link")
         ? `https://logo.clearbit.com/${encodeURIComponent(
-            xmlDoc.querySelector("link").getAttribute("href").split("/")[2]
+            xmlDoc.querySelector("link")?.getAttribute("href")?.split("/")[2]
           )}`
-        : `https://logo.clearbit.com/${encodeURIComponent(url.split("/")[2])}`;
+        : `https://logo.clearbit.com/${encodeURIComponent(
+            xmlDoc.url.split("/")[2]
+          )}`;
       feed.title = feedTitle;
       feed.feedURL = url;
       feed.icon = feedIcon;
