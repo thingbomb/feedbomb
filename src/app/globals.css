@@ -91,6 +91,10 @@ td {
 }
 
 a {
+  @apply text-cyan-600;
+}
+
+.dark a {
   @apply text-blue-300;
 }
 

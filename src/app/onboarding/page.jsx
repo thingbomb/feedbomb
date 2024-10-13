@@ -87,7 +87,7 @@ export default function App() {
       <div className="flex h-screen w-screen items-center justify-center">
         <div className="gap-4 px-8 py-8 max-w-[600px] text-left">
           <h1 className="text-4xl font-bold mb-3">Welcome to Feedbomb</h1>
-          <p className="text-lg text-gray-300">
+          <p className="text-lg text-gray-500 dark:text-gray-300">
             Feedbomb is a tool to help you keep all your feeds organized, so you
             can stay up-to-date with the latest news and information.
           </p>
@@ -105,7 +105,7 @@ export default function App() {
           <h1 className="text-4xl font-bold mb-3">
             Pick some feeds to get started
           </h1>
-          <p className="text-lg text-gray-300">
+          <p className="text-lg text-gray-500 dark:text-gray-300">
             These feeds have been curated. You can always add more feeds later.
           </p>
           <br />
