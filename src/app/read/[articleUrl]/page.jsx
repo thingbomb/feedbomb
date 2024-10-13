@@ -62,9 +62,11 @@ const ArticlePage = async ({ params }) => {
           }
         />
       </head>
-      <main className="max-w-4xl mx-auto p-4 bg-[#1D1E20] text-white rounded-lg mt-8 text-[18px] leading-relaxed">
+      <main className="max-w-4xl mx-auto p-4 pt-0 rounded-lg mt-8 text-[18px] leading-relaxed">
         {isLoading ? (
-          <p className="text-gray-500 text-center">Loading...</p>
+          <p className="text-gray-500 dark:text-gray-400 text-center">
+            Loading...
+          </p>
         ) : error ? (
           <>
             <b>We're sorry, but we couldn't process this article.</b>
@@ -74,7 +76,7 @@ const ArticlePage = async ({ params }) => {
               <a href={decodedUrl}>
                 <Button>Read on original site</Button>
               </a>
-              <a href="/" className="text-white">
+              <a href="/" className="text-black dark:text-white">
                 <Button variant="outline">Back to home</Button>
               </a>
             </div>
@@ -82,7 +84,7 @@ const ArticlePage = async ({ params }) => {
         ) : (
           <>
             <h1 className="text-3xl font-bold mb-2">{title}</h1>
-            <p className="text-gray-400 mb-4">
+            <p className="text-gray-500 dark:text-gray-400 mb-4">
               <strong>By {author}</strong> |{" "}
               <em>{new Date(datePublished).toLocaleString()}</em>
               {ttr > 60 ? ` | ${(ttr - (ttr % 60)) / 60} min read` : ""}

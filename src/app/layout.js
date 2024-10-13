@@ -1,5 +1,6 @@
 import localFont from "next/font/local";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -14,7 +15,7 @@ const geistMono = localFont({
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <title>Feedbomb</title>
         <link rel="icon" href="/favicon.ico" />
@@ -27,10 +28,15 @@ export default function RootLayout({ children }) {
         />
         <meta name="og:image" content="/assets/poster.png" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#1D1E20] text-white dark`}
-      >
-        {children}
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

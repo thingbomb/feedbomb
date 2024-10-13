@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import FeedItem from "@/components/ui/feed-item";
+import { ModeToggle } from "@/components/ui/dark-toggle";
 import {
   SettingsIcon,
   LucideHome,
@@ -20,6 +21,8 @@ import {
   LoaderCircle,
 } from "lucide-react";
 import { History } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import { Sidebar } from "lucide-react";
 
 export default function Home() {
   const [feedsJSON, setFeedsJSON] = useState([]);
@@ -369,30 +372,22 @@ export default function Home() {
       >
         <header className="p-4 flex justify-between gap-4 items-center select-none">
           <div className="flex gap-4 items-center">
-            <button onClick={() => setSidebarOpen(!sidebarOpen)}>
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                xmlns="http://www.w3.org/2000/svg"
-                className="cursor-pointer"
-              >
-                <path
-                  d="M5.474 19h13.052c.834 0 1.455-.202 1.863-.605.407-.403.611-1.008.611-1.815V7.42c0-.807-.204-1.412-.611-1.815C19.98 5.202 19.36 5 18.526 5H5.474c-.821 0-1.439.202-1.853.605C3.207 6.008 3 6.613 3 7.42v9.16c0 .807.207 1.412.621 1.815.414.403 1.032.605 1.853.605Zm.02-1.392c-.35 0-.62-.091-.81-.274-.191-.182-.287-.456-.287-.821V7.487c0-.359.096-.63.287-.816.19-.186.46-.279.81-.279h13.012c.35 0 .62.093.81.279.191.185.287.457.287.816v9.026c0 .365-.096.639-.287.821-.19.183-.46.274-.81.274H5.494Zm3.377.268h1.368V6.152H8.87v11.724ZM7.415 9.178a.45.45 0 0 0 .33-.149c.097-.1.146-.21.146-.331a.433.433 0 0 0-.146-.322.465.465 0 0 0-.33-.14H5.882a.465.465 0 0 0-.33.14.433.433 0 0 0-.146.322c0 .121.049.232.146.331a.45.45 0 0 0 .33.149h1.533Zm0 1.92a.457.457 0 0 0 .33-.144.459.459 0 0 0 .146-.336.433.433 0 0 0-.146-.321.465.465 0 0 0-.33-.14H5.882a.465.465 0 0 0-.33.14.433.433 0 0 0-.146.321c0 .128.049.24.146.336a.457.457 0 0 0 .33.144h1.533Zm0 1.92a.465.465 0 0 0 .33-.138.443.443 0 0 0 .146-.332.433.433 0 0 0-.146-.321.465.465 0 0 0-.33-.14H5.882a.465.465 0 0 0-.33.14.433.433 0 0 0-.146.321c0 .128.049.239.146.332.097.092.207.139.33.139h1.533Z"
-                  fill="currentColor"
-                ></path>
-              </svg>
-            </button>
-            <span>
-              {selector == "all_posts"
-                ? "Home"
-                : feedsJSON[currentIndex].title.split(" - ")[0]}
-            </span>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
+              <Sidebar className="h-[1.2rem] w-[1.2rem]" />
+            </Button>
           </div>
-          <a href="/settings" className="text-white">
-            <SettingsIcon />
-          </a>
+          <div className="flex gap-2 items-center">
+            <ModeToggle />
+            <a href="/settings" className="text-black dark:text-white">
+              <Button variant="outline" size="icon">
+                <SettingsIcon className="h-[1.2rem] w-[1.2rem]" />
+              </Button>
+            </a>
+          </div>
         </header>
         <div
           className={
@@ -407,12 +402,12 @@ export default function Home() {
           >
             {sidebarOpen ? (
               <>
-                <span className="text-gray-300">Feeds</span>
+                <span className="text-gray-500 dark:text-gray-300">Feeds</span>
                 <ul>
                   <FeedItem
                     className={
-                      "flex gap-4 items-center cursor-pointer select-none hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-2 rounded-lg w-full " +
-                      (selector == "all_posts" ? " !bg-[#7C3AED]" : "")
+                      "flex gap-4 items-center cursor-pointer select-none p-2 rounded-lg w-full feed-item " +
+                      (selector == "all_posts" ? "selected-feed" : "")
                     }
                     selector={selector}
                     tabIndex={0}
@@ -506,14 +501,13 @@ export default function Home() {
                   </Dialog>
                 </ul>
                 <div className={readHistory ? "" : "hidden"}>
-                  <span className="text-gray-300">Articles</span>
+                  <span className="text-gray-500 dark:text-gray-300">
+                    Articles
+                  </span>
                   <ul>
                     <FeedItem
-                      className={
-                        "flex gap-4 items-center cursor-pointer select-none hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-2 rounded-lg w-full " +
-                        (selector == "history" ? " !bg-[#7C3AED]" : "")
-                      }
-                      selector="history"
+                      url="history"
+                      selector={selector}
                       tabIndex={0}
                       onClick={() => {
                         setSelector("history");
@@ -571,7 +565,7 @@ export default function Home() {
                       <div key={index} className="mb-4">
                         <a
                           href={"/read/" + btoa(item.link).replaceAll("/", "-")}
-                          className="text-white grid grid-cols-[150px_calc(100%_-_150px)] gap-4 hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-3 rounded-lg visited:text-[gray] "
+                          className="text-black dark:text-white grid grid-cols-[150px_calc(100%_-_150px)] gap-4 hover:bg-[#f5f5f5] active:bg-[#e5e5e5] dark:hover:bg-[#FFFFFF14] dark:active:bg-[#FFFFFF1A] p-3 rounded-lg visited:text-[gray] "
                         >
                           <img
                             src={item.image}

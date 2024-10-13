@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/ui/dark-toggle";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -11,6 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SettingsIcon } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -56,13 +59,24 @@ export default function Settings() {
 
   return (
     <>
-      <header className="p-4 flex justify-left gap-4 items-center select-none">
-        <a href="/" className="text-white">
-          <ArrowLeft />
-        </a>
-        <span className="text-white">Settings</span>
+      <header className="p-2 pl-4 pr-4 flex justify-between gap-4 items-center select-none">
+        <div className="flex gap-4 items-center">
+          <a href="/" className="text-black dark:text-white">
+            <Button variant="outline" size="icon">
+              <ChevronLeft className="h-[1.2rem] w-[1.2rem]" />
+            </Button>
+          </a>
+        </div>
+        <div className="flex gap-2 items-center">
+          <ModeToggle />
+          <a href="/settings" className="text-black dark:text-white">
+            <Button variant="outline" size="icon">
+              <SettingsIcon className="h-[1.2rem] w-[1.2rem]" />
+            </Button>
+          </a>
+        </div>
       </header>
-      <div className="p-4 pl-12">
+      <div className="p-6">
         <h1>Filters</h1>
         <br />
         {savedFilters.map((filter, index) => (
