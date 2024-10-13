@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/dark-toggle";
 import { Home } from "lucide-react";
 import { SettingsIcon } from "lucide-react";
+import Link from "next/link";
 
 let data = {
   tech: [
@@ -260,11 +261,11 @@ export default function Discover() {
         </div>
         <div className="flex gap-2 items-center">
           <ModeToggle />
-          <a href="/settings" className="text-black dark:text-white">
+          <Link href="/settings" className="text-black dark:text-white">
             <Button variant="outline" size="icon">
               <SettingsIcon className="h-[1.2rem] w-[1.2rem]" />
             </Button>
-          </a>
+          </Link>
         </div>
       </header>
       <main className="p-4 pt-2">
@@ -283,7 +284,9 @@ export default function Discover() {
               <ul>
                 {data[category].map((feed, index) => (
                   <li key={index}>
-                    <a href={"/addFeed?feedURL=" + feed.url}>{feed.title}</a>
+                    <Link href={"/addFeed?feedURL=" + feed.url}>
+                      {feed.title}
+                    </Link>
                   </li>
                 ))}
               </ul>

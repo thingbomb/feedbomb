@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import ReadHistory from "@/components/ui/read-history";
 import { extract } from "@extractus/article-extractor";
+import Link from "next/link";
 
 const ArticlePage = async ({ params }) => {
   let content = "";
@@ -73,12 +74,12 @@ const ArticlePage = async ({ params }) => {
             <br />
             <br />
             <div className="flex gap-2">
-              <a href={decodedUrl}>
+              <Link href={decodedUrl}>
                 <Button>Read on original site</Button>
-              </a>
-              <a href="/" className="text-black dark:text-white">
+              </Link>
+              <Link href="/" className="text-black dark:text-white">
                 <Button variant="outline">Back to home</Button>
-              </a>
+              </Link>
             </div>
           </>
         ) : (
@@ -89,9 +90,9 @@ const ArticlePage = async ({ params }) => {
               <em>{new Date(datePublished).toLocaleString()}</em>
               {ttr > 60 ? ` | ${(ttr - (ttr % 60)) / 60} min read` : ""}
             </p>
-            <a href={decodedUrl}>
+            <Link href={decodedUrl}>
               <Button>Read on original site</Button>
-            </a>
+            </Link>
             <br />
             <br />
             <article

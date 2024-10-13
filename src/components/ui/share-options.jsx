@@ -46,6 +46,13 @@ export function ShareOptions(props) {
         >
           Hacker News
         </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            navigator.clipboard.writeText(props.url);
+          }}
+        >
+          Copy
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

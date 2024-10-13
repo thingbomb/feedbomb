@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Link } from "lucide-react";
 
 export default function App() {
   function shuffleArray(array) {
@@ -122,7 +123,7 @@ export default function App() {
                   id={index}
                 />
                 <label htmlFor={index} className="select-none">
-                  {feed.title} <a href={feed.visitURL}>(visit)</a>
+                  {feed.title} <Link href={feed.visitURL}>(visit)</Link>
                 </label>
               </div>
             ))}

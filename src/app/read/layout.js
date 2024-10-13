@@ -9,6 +9,7 @@ import { ModeToggle } from "@/components/ui/dark-toggle";
 import { SettingsIcon } from "lucide-react";
 import { ShareOptions } from "@/components/ui/share-options";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -40,17 +41,17 @@ export default function RootLayout({ children }) {
         >
           <header className="p-2 pl-4 pr-4 flex justify-between gap-4 items-center select-none">
             <div className="flex gap-4 items-center">
-              <a href="/" className="text-black dark:text-white">
+              <Link href="/" className="text-black dark:text-white">
                 <Button variant="outline" size="icon">
                   <ChevronLeft className="h-[1.2rem] w-[1.2rem]" />
                 </Button>
-              </a>
+              </Link>
             </div>
             <div className="flex gap-2 items-center">
               <ModeToggle />
               <ShareOptions
                 url={`${
-                  atob(pathname.split("/")[2]).replaceAll("-", "/") ||
+                  atob(pathname.split("/")[2].replaceAll("-", "/")) ||
                   `https://feedbomb.app${pathname}`
                 }`}
               />
