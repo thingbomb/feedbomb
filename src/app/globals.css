@@ -210,6 +210,10 @@ img {
   .sidebar-open {
     .grid-container {
       grid-template-columns: 100% 0px;
+
+      aside {
+        width: 100vw;
+      }
     }
     .main-content {
       display: none;

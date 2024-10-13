@@ -482,8 +482,8 @@ export default function Home() {
                           Enter the URL of the RSS feed you want to add.
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
+                      <div className="grid gap-4">
+                        <div>
                           <Label htmlFor="feedUrl" className="text-right">
                             Feed URL
                           </Label>
@@ -496,6 +496,7 @@ export default function Home() {
                           />
                         </div>
                       </div>
+                      <a href="/discover">Discover more feeds</a>
                       <DialogFooter>
                         <Button onClick={handleAddFeed}>Add Feed</Button>
                       </DialogFooter>

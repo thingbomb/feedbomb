@@ -275,46 +275,20 @@ export default function Discover() {
         </p>
         <br />
         <div className="feeds">
-          <div className="tech">
-            Tech
-            <ul>
-              {data["tech"].map((feed, index) => (
-                <li key={index}>
-                  <a href={"/addFeed?feedURL=" + feed.url}>{feed.title}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="us_news">
-            U.S. News
-            <ul>
-              {data["us_news"].map((feed, index) => (
-                <li key={index}>
-                  <a href={"/addFeed?feedURL=" + feed.url}>{feed.title}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="world_news">
-            World News
-            <ul>
-              {data["world_news"].map((feed, index) => (
-                <li key={index}>
-                  <a href={"/addFeed?feedURL=" + feed.url}>{feed.title}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="business">
-            Business
-            <ul>
-              {data["business"].map((feed, index) => (
-                <li key={index}>
-                  <a href={"/addFeed?feedURL=" + feed.url}>{feed.title}</a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {Object.keys(data).map((category) => (
+            <div className={category} key={category}>
+              {category
+                .replace(/_/g, " ")
+                .replace(/\b\w/g, (char) => char.toUpperCase())}
+              <ul>
+                {data[category].map((feed, index) => (
+                  <li key={index}>
+                    <a href={"/addFeed?feedURL=" + feed.url}>{feed.title}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </main>
     </>
