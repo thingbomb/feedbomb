@@ -83,7 +83,7 @@ const ArticlePage = async ({ params }) => {
         />
         <meta property="image" content={image} />
         <meta
-          name="og:image"
+          property="og:image"
           content={
             image ? `/api/imageProxy?url=${image}` : `/assets/poster.png`
           }
