@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import ReadHistory from "@/components/ui/read-history";
 import { extract } from "@extractus/article-extractor";
+import { JSDOM } from "jsdom";
 
 const ArticlePage = async ({ params }) => {
   let content = "";
@@ -41,10 +42,16 @@ const ArticlePage = async ({ params }) => {
     } else {
       const response = await fetch(decodedUrl);
       const html = await response.text();
-      const ogTitleMatch = html.match(
-        /<meta property="og:title" content="(.+?)"/
-      );
-      title = ogTitleMatch ? ogTitleMatch[1] : "YouTube Video";
+      const dom = new JSDOM(html);
+      const document = dom.window.document;
+
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) {
+        title = ogTitle.getAttribute("content");
+      } else {
+        title = document.querySelector("title")?.textContent || "Video";
+      }
+
       datePublished = new Date().toISOString();
     }
     isLoading = false;
