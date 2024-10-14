@@ -7,7 +7,7 @@ Feedbomb is a minimalistic, fast, and customizable RSS feed reader. Use on all y
 - **Open-source**: Feedbomb thrives from the open-source community.
 - **Self-Hostable**: Host Feedbomb on your own server.
 - **PWA Support**: Use Feedbomb as a PWA for a native-like experience on all your devices.
-- **Advanced article reader**: Read articles with our advanced, fully-featured article reader for a distraction-free reading experience.
+- **Advanced article reader**: Read articles with our advanced, fully-featured article reader for a distraction-free reading experience. Plays nice with YouTube by embedding the video.
 - **Modern UI**: Feedbomb has a modern, responsive user interface.
 - **Filter out the bad stuff**: Feedbomb lets you create custom rules to filter out unwanted articles.
 - **Much more coming soon**
