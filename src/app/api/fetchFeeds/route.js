@@ -1,6 +1,5 @@
 import jschardet from "jschardet";
 import iconv from "iconv-lite";
-import { response } from "express";
 
 let cache = {};
 
