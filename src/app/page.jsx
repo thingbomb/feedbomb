@@ -385,11 +385,11 @@ export default function Home() {
           </div>
           <div className="flex gap-2 items-center">
             <ModeToggle />
-            <Link href="/settings" className="text-black dark:text-white">
+            <a href="/settings" className="text-black dark:text-white">
               <Button variant="outline" size="icon">
                 <SettingsIcon className="h-[1.2rem] w-[1.2rem]" />
               </Button>
-            </Link>
+            </a>
           </div>
         </header>
         <div
@@ -497,7 +497,7 @@ export default function Home() {
                           />
                         </div>
                       </div>
-                      <Link href="/discover">Discover more feeds</Link>
+                      <a href="/discover">Discover more feeds</a>
                       <DialogFooter>
                         <Button onClick={handleAddFeed}>Add Feed</Button>
                       </DialogFooter>
@@ -567,7 +567,7 @@ export default function Home() {
                     })
                     .map((item, index) => (
                       <div key={index} className="mb-4">
-                        <Link
+                        <a
                           href={"/read/" + btoa(item.link).replaceAll("/", "-")}
                           className="text-black dark:text-white grid grid-cols-[150px_calc(100%_-_150px)] gap-4 hover:bg-[#f5f5f5] active:bg-[#e5e5e5] dark:hover:bg-[#FFFFFF14] dark:active:bg-[#FFFFFF1A] p-3 rounded-lg visited:text-[gray] "
                         >
@@ -591,7 +591,7 @@ export default function Home() {
                               {item.description}
                             </span>
                           </div>
-                        </Link>
+                        </a>
                       </div>
                     ))}
                 </ul>

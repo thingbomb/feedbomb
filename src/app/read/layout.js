@@ -39,7 +39,7 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
-          <header className="p-2 pl-4 pr-4 flex justify-between gap-4 items-center select-none">
+          <header className="p-2 pl-4 pr-4 flex justify-between gap-4 items-center select-none sticky top-0 bg-white dark:bg-black">
             <div className="flex gap-4 items-center">
               <Link href="/" className="text-black dark:text-white">
                 <Button variant="outline" size="icon">
@@ -62,7 +62,7 @@ export default function RootLayout({ children }) {
               </a>
             </div>
           </header>
-          <main className="overflow-y-auto custom-scrollbar">{children}</main>
+          <article>{children}</article>
         </ThemeProvider>
       </body>
     </html>

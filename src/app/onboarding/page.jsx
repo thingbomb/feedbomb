@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Link } from "lucide-react";
+import { Link } from "next/link";
 
 export default function App() {
   function shuffleArray(array) {
