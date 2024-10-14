@@ -40,19 +40,7 @@ const ArticlePage = async ({ params }) => {
       ttr = article.ttr;
       image = article.image;
     } else {
-      const response = await fetch(decodedUrl);
-      const html = await response.text();
-      const dom = new JSDOM(html);
-      const document = dom.window.document;
-
-      const ogTitle = document.querySelector('meta[property="og:title"]');
-      if (ogTitle) {
-        title = ogTitle.getAttribute("content");
-      } else {
-        title = document.querySelector("title")?.textContent || "Video";
-      }
-
-      datePublished = new Date().toISOString();
+      title = "Video";
     }
     isLoading = false;
   } catch (err) {
