@@ -74,12 +74,12 @@ const ArticlePage = async ({ params }) => {
             <br />
             <br />
             <div className="flex gap-2">
-              <Link href={decodedUrl}>
+              <a href={decodedUrl}>
                 <Button>Read on original site</Button>
-              </Link>
-              <Link href="/" className="text-black dark:text-white">
+              </a>
+              <a href="/" className="text-black dark:text-white">
                 <Button variant="outline">Back to home</Button>
-              </Link>
+              </a>
             </div>
           </>
         ) : (
@@ -90,9 +90,9 @@ const ArticlePage = async ({ params }) => {
               <em>{new Date(datePublished).toLocaleString()}</em>
               {ttr > 60 ? ` | ${(ttr - (ttr % 60)) / 60} min read` : ""}
             </p>
-            <Link href={decodedUrl}>
+            <a href={decodedUrl}>
               <Button>Read on original site</Button>
-            </Link>
+            </a>
             <br />
             <br />
             <article
