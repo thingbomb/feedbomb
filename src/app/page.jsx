@@ -52,12 +52,13 @@ export default function Home() {
         : "";
 
       let feedIcon = xmlDoc.querySelector("link")
-        ? `https://logo.clearbit.com/${encodeURIComponent(
-            xmlDoc.querySelector("link")?.getAttribute("href")?.split("/")[2]
-          )}`
-        : `https://logo.clearbit.com/${encodeURIComponent(
-            xmlDoc.url.split("/")[2]
-          )}`;
+        ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(
+            xmlDoc.querySelector("link")?.getAttribute("href")?.split("/")[2] ||
+              url.split("/")[2]
+          )}&sz=32`
+        : `https://www.google.com/s2/favicons?domain=${encodeURIComponent(
+            url.split("/")[2]
+          )}&sz=32`;
       feed.title = feedTitle;
       feed.feedURL = url;
       feed.icon = feedIcon;
@@ -107,7 +108,9 @@ export default function Home() {
               ?.getAttribute("url") ||
             (placeholder.querySelector("img")
               ? placeholder.querySelector("img").src
-              : `https://logo.clearbit.com/${new URL(link).hostname}`);
+              : `https://www.google.com/s2/favicons?domain=${
+                  new URL(link).hostname
+                }&sz=128`);
         } else {
           placeholder.innerHTML =
             description ||
@@ -120,7 +123,9 @@ export default function Home() {
             item
               .getElementsByTagName("media:thumbnail")[0]
               ?.getAttribute("url") ||
-            `https://logo.clearbit.com/${new URL(link).hostname}`;
+            `https://www.google.com/s2/favicons?domain=${
+              new URL(link).hostname
+            }&sz=128`;
         }
 
         let pubDate = item.querySelector("pubDate, published")
@@ -276,7 +281,7 @@ export default function Home() {
           title: "History",
           type: "articles",
           feedURL: "history",
-          icon: "https://logo.clearbit.com/feedbomb.app",
+          icon: "https://www.google.com/s2/favicons?domain=feedbomb.app&sz=32",
           items: [],
         };
         for (let i = 0; i < readHistory.length; i++) {

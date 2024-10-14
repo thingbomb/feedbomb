@@ -123,7 +123,7 @@ export default function App() {
                   id={index}
                 />
                 <label htmlFor={index} className="select-none">
-                  {feed.title} <Link href={feed.visitURL}>(visit)</Link>
+                  {feed.title} <a href={feed.visitURL}>(visit)</a>
                 </label>
               </div>
             ))}

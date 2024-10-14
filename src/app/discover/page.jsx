@@ -3,9 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/dark-toggle";
 import { ChevronLeft } from "lucide-react";
-import { Home } from "lucide-react";
 import { SettingsIcon } from "lucide-react";
-import Link from "next/link";
 
 let data = {
   tech: [
