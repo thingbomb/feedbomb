@@ -14,19 +14,17 @@ export default function Read() {
     <>
       <header className="p-2 pl-4 pr-4 flex justify-between gap-4 items-center select-none absolute left-0 right-0 top-0 z-10">
         <div className="flex gap-4 items-center">
-          <Link href="/" className="text-black dark:text-white">
-            <Button variant="outline" size="icon">
-              <ChevronLeft className="h-[1.2rem] w-[1.2rem]" />
-            </Button>
-          </Link>
+          <Button variant="outline" size="icon" onClick={() => history.back()}>
+            <ChevronLeft className="h-[1.2rem] w-[1.2rem]" />
+          </Button>
         </div>
         <div className="flex gap-2 items-center">
           <ModeToggle />
-          <Link href="/settings" className="text-black dark:text-white">
+          <a href="/settings" className="text-black dark:text-white">
             <Button variant="outline" size="icon">
               <SettingsIcon className="h-[1.2rem] w-[1.2rem]" />
             </Button>
-          </Link>
+          </a>
         </div>
       </header>
       <div className="p-8 fixed inset-0 flex justify-center items-center z-5">
@@ -52,7 +50,7 @@ export default function Read() {
                   }
                 }}
               />
-              <Link
+              <a
                 href={`/read/${btoa(articleUrl).replaceAll("/", "-")}`}
                 className={
                   articleUrl.length == 0
@@ -61,7 +59,7 @@ export default function Read() {
                 }
               >
                 <Button disabled={articleUrl.length == 0}>Read</Button>
-              </Link>
+              </a>
             </div>
           </section>
         </article>

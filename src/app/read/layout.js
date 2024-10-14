@@ -40,11 +40,13 @@ export default function RootLayout({ children }) {
         >
           <header className="p-2 pl-4 pr-4 flex justify-between gap-4 items-center select-none sticky top-0 bg-white dark:bg-black">
             <div className="flex gap-4 items-center">
-              <a href="/" className="text-black dark:text-white">
-                <Button variant="outline" size="icon">
-                  <ChevronLeft className="h-[1.2rem] w-[1.2rem]" />
-                </Button>
-              </a>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => history.back()}
+              >
+                <ChevronLeft className="h-[1.2rem] w-[1.2rem]" />
+              </Button>
             </div>
             <div className="flex gap-2 items-center">
               <ModeToggle />

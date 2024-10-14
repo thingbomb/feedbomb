@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/dark-toggle";
+import { ChevronLeft } from "lucide-react";
 import { Home } from "lucide-react";
 import { SettingsIcon } from "lucide-react";
 import Link from "next/link";
@@ -251,21 +252,17 @@ export default function Discover() {
     <>
       <header className="p-4 flex justify-between gap-4 items-center select-none">
         <div className="flex gap-4 items-center">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => (window.location.href = "/")}
-          >
-            <Home className="h-[1.2rem] w-[1.2rem]" />
+          <Button variant="outline" size="icon" onClick={() => history.back()}>
+            <ChevronLeft className="h-[1.2rem] w-[1.2rem]" />
           </Button>
         </div>
         <div className="flex gap-2 items-center">
           <ModeToggle />
-          <Link href="/settings" className="text-black dark:text-white">
+          <a href="/settings" className="text-black dark:text-white">
             <Button variant="outline" size="icon">
               <SettingsIcon className="h-[1.2rem] w-[1.2rem]" />
             </Button>
-          </Link>
+          </a>
         </div>
       </header>
       <main className="p-4 pt-2">
@@ -284,9 +281,7 @@ export default function Discover() {
               <ul>
                 {data[category].map((feed, index) => (
                   <li key={index}>
-                    <Link href={"/addFeed?feedURL=" + feed.url}>
-                      {feed.title}
-                    </Link>
+                    <a href={"/addFeed?feedURL=" + feed.url}>{feed.title}</a>
                   </li>
                 ))}
               </ul>
