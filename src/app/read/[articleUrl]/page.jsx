@@ -65,16 +65,12 @@ const ArticlePage = async ({ params }) => {
         <meta property="twitter:title" content={title} />
         <meta
           property="twitter:image"
-          content={
-            image ? `/api/imageProxy?url=${image}` : `/assets/poster.png`
-          }
+          content={image ? `${image}` : `/assets/poster.png`}
         />
         <meta property="image" content={image} />
         <meta
           property="og:image"
-          content={
-            image ? `/api/imageProxy?url=${image}` : `/assets/poster.png`
-          }
+          content={image ? `${image}` : `/assets/poster.png`}
         />
       </head>
       <main className="max-w-4xl mx-auto p-4 pt-0 rounded-lg mt-8 text-[18px] leading-relaxed">

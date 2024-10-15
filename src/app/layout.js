@@ -26,7 +26,6 @@ export default function RootLayout({ children }) {
           name="og:description"
           content="A minimalistic, fast RSS-reader."
         />
-        <meta name="og:image" content="/assets/poster.png" />
       </head>
       <body>
         <ThemeProvider
