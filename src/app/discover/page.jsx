@@ -7,7 +7,7 @@ import { SettingsIcon } from "lucide-react";
 
 let data = {
   tech: [
-    { url: "https://feeds.feedburner.com/TechCrunch", title: "TechCrunch" },
+    { url: "https://techcrunch.com/feed", title: "TechCrunch" },
     { url: "https://www.wired.com/feed/rss", title: "Wired" },
     { url: "https://www.theverge.com/rss/index.xml", title: "The Verge" },
     { url: "https://www.engadget.com/rss.xml", title: "Engadget" },
