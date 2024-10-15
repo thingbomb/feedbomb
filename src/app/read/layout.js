@@ -37,7 +37,7 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
-          <header className="p-2 pl-4 pr-4 flex justify-between gap-4 items-center select-none sticky top-0 bg-white dark:bg-black">
+          <header className="p-2 pl-4 pr-4 flex justify-between gap-4 items-center select-none fixed right-0 left-0 top-0 bg-white dark:bg-black">
             <div className="flex gap-4 items-center">
               <Button
                 variant="outline"

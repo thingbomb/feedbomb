@@ -21,9 +21,7 @@ import {
   LoaderCircle,
 } from "lucide-react";
 import { History } from "lucide-react";
-import { ChevronRight } from "lucide-react";
 import { Sidebar } from "lucide-react";
-import Link from "next/link";
 
 export default function Home() {
   const [feedsJSON, setFeedsJSON] = useState([]);
@@ -108,9 +106,7 @@ export default function Home() {
               ?.getAttribute("url") ||
             (placeholder.querySelector("img")
               ? placeholder.querySelector("img").src
-              : `https://www.google.com/s2/favicons?domain=${
-                  new URL(link).hostname
-                }&sz=128`);
+              : `data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw`);
         } else {
           placeholder.innerHTML =
             description ||
@@ -123,9 +119,7 @@ export default function Home() {
             item
               .getElementsByTagName("media:thumbnail")[0]
               ?.getAttribute("url") ||
-            `https://www.google.com/s2/favicons?domain=${
-              new URL(link).hostname
-            }&sz=128`;
+            `data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw`;
         }
 
         let pubDate = item.querySelector("pubDate, published")
