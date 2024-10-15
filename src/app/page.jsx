@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +22,80 @@ import {
 } from "lucide-react";
 import { History } from "lucide-react";
 import { Sidebar } from "lucide-react";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command";
+import { Settings } from "lucide-react";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { PlusIcon } from "lucide-react";
+
+function CommandPalette({ onAddFeed }) {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const down = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        setOpen((open) => !open);
+      }
+    };
+
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
+
+  const handleCommand = (action) => {
+    setOpen(false);
+    switch (action) {
+      case "settings":
+        window.location.href = "/settings";
+        break;
+      case "discover":
+        window.location.href = "/discover";
+        break;
+      case "add-feed":
+        onAddFeed();
+        break;
+      default:
+        console.log("Unknown action");
+    }
+  };
+
+  return (
+    <>
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandInput placeholder="Type a command or search..." />
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup heading="Settings">
+            <CommandItem onSelect={() => handleCommand("settings")}>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Settings</span>
+            </CommandItem>
+          </CommandGroup>
+          <CommandGroup heading="Feeds">
+            <CommandItem onSelect={() => handleCommand("add-feed")}>
+              <PlusIcon className="mr-2 h-4 w-4" />
+              <span>Add feed</span>
+            </CommandItem>
+            <CommandItem onSelect={() => handleCommand("discover")}>
+              <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+              <span>Discover</span>
+            </CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
+    </>
+  );
+}
 
 export default function Home() {
   const [feedsJSON, setFeedsJSON] = useState([]);
@@ -37,6 +111,10 @@ export default function Home() {
   const [rendered, setRendered] = useState(false);
   const [feeds, setFeeds] = useState([]);
   const [readHistory, setReadHistory] = useState(null);
+
+  const openDialog = () => {
+    setDialogOpen(true);
+  };
 
   async function parseRSSFeed(xmlString, url) {
     let feed = {};
@@ -300,10 +378,30 @@ export default function Home() {
       localStorage.setItem("filters", JSON.stringify([]));
       setRules([]);
     }
+    const toggleSidebar = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+        e.preventDefault();
+        setSidebarOpen((prev) => !prev);
+      }
+    };
+
+    document.addEventListener("keydown", toggleSidebar);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "j") {
+        e.preventDefault();
+        document.querySelector(".main-content").scrollBy(0, 100);
+      }
+      if (e.key === "k") {
+        e.preventDefault();
+        document.querySelector(".main-content").scrollBy(0, -100);
+      }
+    });
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     return () => {
       setFeedsJSON([]);
       setFeeds([]);
+      document.removeEventListener("keydown", toggleSidebar);
+
       setFeedsURLs([]);
       window.removeEventListener(
         "beforeinstallprompt",
@@ -383,6 +481,7 @@ export default function Home() {
             </Button>
           </div>
           <div className="flex gap-2 items-center">
+            <CommandPalette onAddFeed={openDialog} />
             <ModeToggle />
             <a href="/settings" className="text-black dark:text-white">
               <Button variant="outline" size="icon">
@@ -402,128 +501,125 @@ export default function Home() {
           <aside
             className={"flex flex-col p-4 " + (sidebarOpen ? "" : "hidden")}
           >
-            {sidebarOpen ? (
-              <>
-                <span className="text-gray-500 dark:text-gray-300">Feeds</span>
+            <>
+              <span className="text-gray-500 dark:text-gray-300">Feeds</span>
+              <ul>
+                <FeedItem
+                  className={
+                    "flex gap-4 items-center cursor-pointer select-none p-2 rounded-lg w-full feed-item " +
+                    (selector == "all_posts" ? "selected-feed" : "")
+                  }
+                  selector={selector}
+                  tabIndex={0}
+                  onClick={() => {
+                    setSelector("all_posts");
+                    setCurrentIndex(0);
+                  }}
+                >
+                  <LucideHome className="w-6 h-6" />
+                  <span>Home</span>
+                </FeedItem>
+                {feeds.map((feed, index) => {
+                  if (feed.type == "feeds") {
+                    console.log(feed);
+                    return (
+                      <FeedItem
+                        key={index}
+                        tabIndex={0}
+                        selector={selector}
+                        url={feed.feedURL}
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          let confirmation = confirm(
+                            "Are you sure you want to delete this feed?"
+                          );
+                          if (confirmation) {
+                            setFeedsURLs((prev) => {
+                              const updatedFeeds = prev.filter(
+                                (feedURL) => feedURL !== feed.feedURL
+                              );
+                              localStorage.setItem(
+                                "savedFeeds",
+                                JSON.stringify(updatedFeeds)
+                              );
+                              return updatedFeeds;
+                            });
+                            window.location.reload();
+                          }
+                        }}
+                        onClick={() => {
+                          setSelector(feed.feedURL);
+                          setCurrentIndex(index);
+                        }}
+                      >
+                        <img src={feed.icon} className="w-6 h-6 rounded-full" />
+                        <span className="textellipsis">
+                          {feed.title.split(" - ")[0]}
+                        </span>
+                      </FeedItem>
+                    );
+                  }
+                })}
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                  <DialogTrigger asChild>
+                    <button
+                      variant="outline"
+                      className="flex gap-4 items-center cursor-pointer select-none hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-2 rounded-lg w-full"
+                      id="add-feed-button"
+                      onClick={openDialog}
+                    >
+                      <LucidePlus className="w-6 h-6" />
+                      <span>Add</span>
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Add New RSS Feed</DialogTitle>
+                      <DialogDescription>
+                        Enter the URL of the RSS feed you want to add.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4">
+                      <div>
+                        <Label htmlFor="feedUrl" className="text-right">
+                          Feed URL
+                        </Label>
+                        <Input
+                          id="feedUrl"
+                          value={newFeedURL}
+                          onChange={(e) => setNewFeedURL(e.target.value)}
+                          className="col-span-3"
+                          placeholder="https://example.com/rss"
+                        />
+                      </div>
+                    </div>
+                    <a href="/discover">Discover more feeds</a>
+                    <DialogFooter>
+                      <Button onClick={handleAddFeed}>Add Feed</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </ul>
+              <div className={readHistory ? "" : "hidden"}>
+                <span className="text-gray-500 dark:text-gray-300">
+                  Articles
+                </span>
                 <ul>
                   <FeedItem
-                    className={
-                      "flex gap-4 items-center cursor-pointer select-none p-2 rounded-lg w-full feed-item " +
-                      (selector == "all_posts" ? "selected-feed" : "")
-                    }
+                    url="history"
                     selector={selector}
                     tabIndex={0}
                     onClick={() => {
-                      setSelector("all_posts");
+                      setSelector("history");
                       setCurrentIndex(0);
                     }}
                   >
-                    <LucideHome className="w-6 h-6" />
-                    <span>Home</span>
+                    <History className="w-6 h-6" />
+                    History
                   </FeedItem>
-                  {feeds.map((feed, index) => {
-                    if (feed.type == "feeds") {
-                      console.log(feed);
-                      return (
-                        <FeedItem
-                          key={index}
-                          tabIndex={0}
-                          selector={selector}
-                          url={feed.feedURL}
-                          onContextMenu={(e) => {
-                            e.preventDefault();
-                            let confirmation = confirm(
-                              "Are you sure you want to delete this feed?"
-                            );
-                            if (confirmation) {
-                              setFeedsURLs((prev) => {
-                                const updatedFeeds = prev.filter(
-                                  (feedURL) => feedURL !== feed.feedURL
-                                );
-                                localStorage.setItem(
-                                  "savedFeeds",
-                                  JSON.stringify(updatedFeeds)
-                                );
-                                return updatedFeeds;
-                              });
-                              window.location.reload();
-                            }
-                          }}
-                          onClick={() => {
-                            setSelector(feed.feedURL);
-                            setCurrentIndex(index);
-                          }}
-                        >
-                          <img
-                            src={feed.icon}
-                            className="w-6 h-6 rounded-full"
-                          />
-                          <span className="textellipsis">
-                            {feed.title.split(" - ")[0]}
-                          </span>
-                        </FeedItem>
-                      );
-                    }
-                  })}
-                  <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                    <DialogTrigger asChild>
-                      <button
-                        variant="outline"
-                        className="flex gap-4 items-center cursor-pointer select-none hover:bg-[#FFFFFF14] active:bg-[#FFFFFF1A] p-2 rounded-lg w-full"
-                      >
-                        <LucidePlus className="w-6 h-6" />
-                        <span>Add</span>
-                      </button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                      <DialogHeader>
-                        <DialogTitle>Add New RSS Feed</DialogTitle>
-                        <DialogDescription>
-                          Enter the URL of the RSS feed you want to add.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid gap-4">
-                        <div>
-                          <Label htmlFor="feedUrl" className="text-right">
-                            Feed URL
-                          </Label>
-                          <Input
-                            id="feedUrl"
-                            value={newFeedURL}
-                            onChange={(e) => setNewFeedURL(e.target.value)}
-                            className="col-span-3"
-                            placeholder="https://example.com/rss"
-                          />
-                        </div>
-                      </div>
-                      <a href="/discover">Discover more feeds</a>
-                      <DialogFooter>
-                        <Button onClick={handleAddFeed}>Add Feed</Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
                 </ul>
-                <div className={readHistory ? "" : "hidden"}>
-                  <span className="text-gray-500 dark:text-gray-300">
-                    Articles
-                  </span>
-                  <ul>
-                    <FeedItem
-                      url="history"
-                      selector={selector}
-                      tabIndex={0}
-                      onClick={() => {
-                        setSelector("history");
-                        setCurrentIndex(0);
-                      }}
-                    >
-                      <History className="w-6 h-6" />
-                      History
-                    </FeedItem>
-                  </ul>
-                </div>
-              </>
-            ) : null}
+              </div>
+            </>
           </aside>
           <div className="p-4 pt-1 overflow-y-auto custom-scrollbar h-full main-content">
             {allItems.length > 0 ? (
