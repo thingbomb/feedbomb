@@ -73,7 +73,7 @@ const ArticlePage = async ({ params }) => {
           content={image ? `${image}` : `/assets/poster.png`}
         />
       </head>
-      <main className="max-w-4xl mx-auto p-4 pt-0 rounded-lg mt-8 text-[18px] leading-relaxed">
+      <main className="max-w-4xl mx-auto p-4 pt-16 rounded-lg mt-8 text-[18px] leading-relaxed">
         {isLoading ? (
           <p className="text-gray-500 dark:text-gray-400 text-center">
             Loading...
