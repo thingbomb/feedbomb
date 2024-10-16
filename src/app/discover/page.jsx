@@ -22,7 +22,6 @@ let data = {
       title: "Ars Technica",
     },
     { url: "https://www.zdnet.com/news/rss.xml", title: "ZDNet" },
-    { url: "https://www.computerworld.com/index.rss", title: "Computerworld" },
     { url: "https://www.techmeme.com/feed.xml", title: "Techmeme" },
   ],
   us_news: [
@@ -48,15 +47,6 @@ let data = {
       title: "Los Angeles Times Local",
     },
     { url: "https://www.cbsnews.com/latest/rss/us", title: "CBS News U.S." },
-    {
-      url: "https://www.nbcnews.com/id/3032091/device/rss/rss.xml",
-      title: "NBC News U.S.",
-    },
-    {
-      url: "https://www.usatoday.com/rss/news/nation.xml",
-      title: "USA Today Nation",
-    },
-    { url: "https://www.politico.com/rss/politics.xml", title: "Politico" },
   ],
   world_news: [
     {
@@ -65,23 +55,12 @@ let data = {
     },
     { url: "https://feeds.bbci.co.uk/news/world/rss.xml", title: "BBC World" },
     { url: "https://www.aljazeera.com/xml/rss/all.xml", title: "Al Jazeera" },
-    { url: "https://www.reuters.com/rssfeed/world/", title: "Reuters World" },
     {
       url: "https://www.theguardian.com/world/rss",
       title: "The Guardian World",
     },
     {
-      url: "https://www.dw.com/en/top-stories/world/s-1429/rss",
-      title: "Deutsche Welle World",
-    },
-    { url: "https://www.france24.com/en/rss", title: "France 24" },
-    { url: "https://www3.nhk.or.jp/nhkworld/en/rss/news/", title: "NHK World" },
-    {
-      url: "https://www.spiegel.de/international/index.rss",
-      title: "Der Spiegel International",
-    },
-    {
-      url: "https://www.csmonitor.com/rss/world.rss",
+      url: "https://rss.csmonitor.com/feeds/all",
       title: "Christian Science Monitor World",
     },
   ],
@@ -89,19 +68,11 @@ let data = {
     { url: "https://www.espn.com/espn/rss/news", title: "ESPN" },
     { url: "https://rss.cbc.ca/lineup/sports.xml", title: "CBC Sports" },
     { url: "https://www.skysports.com/rss/12040", title: "Sky Sports" },
-    {
-      url: "https://www.si.com/rss/si_topstories.rss",
-      title: "Sports Illustrated",
-    },
-    { url: "https://www.nba.com/rss/nba_rss.xml", title: "NBA" },
     { url: "https://www.mlb.com/feeds/news/rss.xml", title: "MLB" },
     {
-      url: "https://www.nfl.com/rss/rsslanding?newsType=articles",
-      title: "NFL",
+      url: "https://www.uefa.com/rss/uefachampionsleague/rss.xml",
+      title: "UEFA",
     },
-    { url: "https://www.fifa.com/rss/index.xml", title: "FIFA" },
-    { url: "https://www.uefa.com/rssfeed/news/rss.xml", title: "UEFA" },
-    { url: "https://www.olympic.org/news/rss", title: "Olympic" },
   ],
   canada_news: [
     { url: "https://rss.cbc.ca/lineup/canada.xml", title: "CBC Canada" },
@@ -114,27 +85,14 @@ let data = {
       title: "The Globe and Mail Canada",
     },
     {
-      url: "https://www.thestar.com/content/thestar/feed.RSSManagerServlet.articles.news.canada.rss",
+      url: "https://www.thestar.com/search/?f=rss&t=article&bl=2827101&l=20",
       title: "Toronto Star Canada",
-    },
-    {
-      url: "https://nationalpost.com/category/news/canada/feed",
-      title: "National Post Canada",
-    },
-    {
-      url: "https://www.macleans.ca/news/canada/feed/",
-      title: "Maclean's Canada",
-    },
-    {
-      url: "https://www.huffingtonpost.ca/feeds/verticals/canada-news/index.xml",
-      title: "HuffPost Canada",
     },
     { url: "https://globalnews.ca/canada/feed/", title: "Global News Canada" },
     {
       url: "https://www.cbc.ca/cmlink/rss-topstories",
       title: "CBC Top Stories",
     },
-    { url: "https://www.cp24.com/rss/4.739212", title: "CP24" },
   ],
   india_news: [
     {
@@ -142,10 +100,10 @@ let data = {
       title: "Times of India",
     },
     {
-      url: "https://www.hindustantimes.com/rss/india/rssfeed.xml",
+      url: "https://www.hindustantimes.com/feeds/rss/advertorial/rssfeed.xml",
       title: "Hindustan Times India",
     },
-    { url: "https://www.ndtv.com/india/feeds", title: "NDTV India" },
+    { url: "http://feeds.feedburner.com/NDTV-LatestNews", title: "NDTV India" },
     { url: "https://indianexpress.com/feed/", title: "The Indian Express" },
     {
       url: "https://www.thehindu.com/news/national/?service=rss",
@@ -156,13 +114,9 @@ let data = {
       title: "Zee News India",
     },
     { url: "https://www.news18.com/rss/india.xml", title: "News18 India" },
-    {
-      url: "https://www.deccanherald.com/rss-internal/top-stories.rss",
-      title: "Deccan Herald",
-    },
     { url: "https://www.livemint.com/rss/news", title: "Mint" },
     {
-      url: "https://www.firstpost.com/rss/india.xml",
+      url: "https://www.firstpost.com/commonfeeds/v1/mfp/rss/india.xml",
       title: "Firstpost India",
     },
   ],
@@ -173,10 +127,6 @@ let data = {
     {
       url: "https://www.independent.co.uk/news/uk/rss",
       title: "The Independent UK",
-    },
-    {
-      url: "https://www.thetimes.co.uk/tto/news/uk/rss",
-      title: "The Times UK",
     },
     { url: "https://www.dailymail.co.uk/home/index.rss", title: "Daily Mail" },
     {
@@ -199,7 +149,6 @@ let data = {
       url: "https://www.smh.com.au/rss/national.xml",
       title: "Sydney Morning Herald National",
     },
-    { url: "https://www.theaustralian.com.au/feed/", title: "The Australian" },
     {
       url: "https://www.news.com.au/content-feeds/latest-news-national/",
       title: "news.com.au National",
@@ -215,7 +164,6 @@ let data = {
       title: "The Age National",
     },
     { url: "https://www.perthnow.com.au/news/feed", title: "PerthNow" },
-    { url: "https://www.couriermail.com.au/rss", title: "The Courier-Mail" },
   ],
   business: [
     { url: "https://feeds.bloomberg.com/markets/news.rss", title: "Bloomberg" },
@@ -225,7 +173,7 @@ let data = {
       title: "New York Times Business",
     },
     {
-      url: "https://www.wsj.com/xml/rss/3_7014.xml",
+      url: "https://feeds.a.dj.com/rss/WSJcomUSBusiness.xml",
       title: "Wall Street Journal Business",
     },
     {
@@ -236,7 +184,6 @@ let data = {
       url: "https://www.economist.com/business/rss.xml",
       title: "The Economist Business",
     },
-    { url: "https://www.forbes.com/business/feed/", title: "Forbes Business" },
     {
       url: "https://feeds.feedburner.com/businessinsider",
       title: "Business Insider",

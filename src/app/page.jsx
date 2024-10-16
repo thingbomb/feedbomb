@@ -426,7 +426,10 @@ export default function Home() {
           }
         >
           <aside
-            className={"flex flex-col p-4 " + (sidebarOpen ? "" : "hidden")}
+            className={
+              "flex flex-col p-4 overflow-y-auto " +
+              (sidebarOpen ? "" : "hidden")
+            }
           >
             <>
               <span className="text-gray-500 dark:text-gray-300">Feeds</span>
