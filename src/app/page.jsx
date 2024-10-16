@@ -40,6 +40,7 @@ import { Sun } from "lucide-react";
 import { Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Computer } from "lucide-react";
+import { BookOpen } from "lucide-react";
 
 function CommandPalette({ onAddFeed }) {
   const [open, setOpen] = useState(false);
@@ -66,6 +67,9 @@ function CommandPalette({ onAddFeed }) {
       case "discover":
         window.location.href = "/discover";
         break;
+      case "reader":
+        window.location.href = "/reader";
+        break;
       case "add-feed":
         onAddFeed();
         break;
@@ -89,20 +93,24 @@ function CommandPalette({ onAddFeed }) {
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Settings">
+          <CommandGroup heading="Pages">
             <CommandItem onSelect={() => handleCommand("settings")}>
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
+            </CommandItem>
+            <CommandItem onSelect={() => handleCommand("reader")}>
+              <BookOpen className="mr-2 h-4 w-4" />
+              <span>Reader</span>
+            </CommandItem>
+            <CommandItem onSelect={() => handleCommand("discover")}>
+              <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+              <span>Discover</span>
             </CommandItem>
           </CommandGroup>
           <CommandGroup heading="Feeds">
             <CommandItem onSelect={() => handleCommand("add-feed")}>
               <PlusIcon className="mr-2 h-4 w-4" />
               <span>Add feed</span>
-            </CommandItem>
-            <CommandItem onSelect={() => handleCommand("discover")}>
-              <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
-              <span>Discover</span>
             </CommandItem>
           </CommandGroup>
           <CommandGroup heading="Themes">
