@@ -36,9 +36,14 @@ import {
 import { Settings } from "lucide-react";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { PlusIcon } from "lucide-react";
+import { Sun } from "lucide-react";
+import { Moon } from "lucide-react";
+import { useTheme } from "next-themes";
+import { Computer } from "lucide-react";
 
 function CommandPalette({ onAddFeed }) {
   const [open, setOpen] = useState(false);
+  const { setTheme } = useTheme();
 
   useEffect(() => {
     const down = (e) => {
@@ -63,6 +68,15 @@ function CommandPalette({ onAddFeed }) {
         break;
       case "add-feed":
         onAddFeed();
+        break;
+      case "light":
+        setTheme("light");
+        break;
+      case "dark":
+        setTheme("dark");
+        break;
+      case "system":
+        setTheme("system");
         break;
       default:
         console.log("Unknown action");
@@ -89,6 +103,20 @@ function CommandPalette({ onAddFeed }) {
             <CommandItem onSelect={() => handleCommand("discover")}>
               <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
               <span>Discover</span>
+            </CommandItem>
+          </CommandGroup>
+          <CommandGroup heading="Themes">
+            <CommandItem onSelect={() => handleCommand("light")}>
+              <Sun className="mr-2 h-4 w-4" />
+              <span>Light</span>
+            </CommandItem>
+            <CommandItem onSelect={() => handleCommand("dark")}>
+              <Moon className="mr-2 h-4 w-4" />
+              <span>Dark</span>
+            </CommandItem>
+            <CommandItem onSelect={() => handleCommand("system")}>
+              <Computer className="mr-2 h-4 w-4" />
+              <span>System</span>
             </CommandItem>
           </CommandGroup>
         </CommandList>
