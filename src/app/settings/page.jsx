@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { CommandPalette } from "@/components/ui/cmd";
 import { ModeToggle } from "@/components/ui/dark-toggle";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,7 +15,6 @@ import {
 } from "@/components/ui/select";
 import { SettingsIcon } from "lucide-react";
 import { ChevronLeft } from "lucide-react";
-import { ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function Settings() {
@@ -66,6 +66,7 @@ export default function Settings() {
           </Button>
         </div>
         <div className="flex gap-2 items-center">
+          <CommandPalette />
           <ModeToggle />
           <a href="/settings" className="text-black dark:text-white">
             <Button variant="outline" size="icon">

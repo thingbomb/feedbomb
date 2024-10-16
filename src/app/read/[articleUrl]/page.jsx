@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import ReadHistory from "@/components/ui/read-history";
 import { extract } from "@extractus/article-extractor";
-import { JSDOM } from "jsdom";
 
 const ArticlePage = async ({ params }) => {
   let content = "";

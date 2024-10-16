@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { CommandPalette } from "@/components/ui/cmd";
 import { ModeToggle } from "@/components/ui/dark-toggle";
 import { ChevronLeft } from "lucide-react";
 import { SettingsIcon } from "lucide-react";
@@ -248,13 +249,14 @@ let data = {
 export default function Discover() {
   return (
     <>
-      <header className="p-4 flex justify-between gap-4 items-center select-none">
+      <header className="p-4 pt-2 flex justify-between gap-4 items-center select-none">
         <div className="flex gap-4 items-center">
           <Button variant="outline" size="icon" onClick={() => history.back()}>
             <ChevronLeft className="h-[1.2rem] w-[1.2rem]" />
           </Button>
         </div>
         <div className="flex gap-2 items-center">
+          <CommandPalette />
           <ModeToggle />
           <a href="/settings" className="text-black dark:text-white">
             <Button variant="outline" size="icon">
