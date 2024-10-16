@@ -13,6 +13,7 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
+import { Home } from "lucide-react";
 const { Sun } = require("lucide-react");
 const { Moon } = require("lucide-react");
 const { Computer } = require("lucide-react");
@@ -40,6 +41,9 @@ export function CommandPalette({ onAddFeed }) {
   const handleCommand = (action) => {
     setOpen(false);
     switch (action) {
+      case "home":
+        window.location.href = "/";
+        break;
       case "settings":
         window.location.href = "/settings";
         break;
@@ -73,6 +77,10 @@ export function CommandPalette({ onAddFeed }) {
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup heading="Pages">
+            <CommandItem onSelect={() => handleCommand("home")}>
+              <Home className="mr-2 h-4 w-4" />
+              <span>Home</span>
+            </CommandItem>
             <CommandItem onSelect={() => handleCommand("settings")}>
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>

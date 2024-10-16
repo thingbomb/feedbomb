@@ -9,6 +9,7 @@ import { ModeToggle } from "@/components/ui/dark-toggle";
 import { SettingsIcon } from "lucide-react";
 import { ShareOptions } from "@/components/ui/share-options";
 import { usePathname } from "next/navigation";
+import { CommandPalette } from "@/components/ui/cmd";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -48,6 +49,7 @@ export default function RootLayout({ children }) {
               </Button>
             </div>
             <div className="flex gap-2 items-center">
+              <CommandPalette />
               <ModeToggle />
               <ShareOptions
                 url={`${
