@@ -140,8 +140,8 @@ export default function Home() {
             authorElement.querySelector("name")?.textContent ||
             ""
           : dcCreatorElement
-          ? dcCreatorElement.textContent
-          : "";
+            ? dcCreatorElement.textContent
+            : "";
         feedItems.push({
           title: title,
           link: link,
@@ -318,7 +318,11 @@ export default function Home() {
         e.preventDefault();
         document.querySelector(".main-content").scrollBy(0, 100);
       }
-      if (e.key === "k") {
+      if (
+        e.key === "k" &&
+        !e.target.matches("input") &&
+        !(e.ctrlKey || e.metaKey)
+      ) {
         e.preventDefault();
         document.querySelector(".main-content").scrollBy(0, -100);
       }
