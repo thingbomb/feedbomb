@@ -1,6 +1,8 @@
 # Feedbomb
 
-Feedbomb is a minimalistic, fast, and customizable RSS feed reader. Use on all your devices, create custom article filtering rules, and more, all with Feedbomb.
+Feedbomb is a minimalistic, fast, and customizable RSS feed reader. Use on all your devices, create custom article filtering rules, and more, all with Feedbomb.\
+
+This is the official monorepo for Feedbomb.
 
 ## Features
 
