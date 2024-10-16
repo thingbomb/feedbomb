@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <head>
         <title>Feedbomb</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="og:title" content="Feedbomb" />
