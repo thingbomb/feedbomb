@@ -2,19 +2,20 @@ import { Button } from "@/components/ui/button";
 import ReadHistory from "@/components/ui/read-history";
 import { extract } from "@extractus/article-extractor";
 
-const ArticlePage = async ({ params }) => {
+const ArticlePage = async ({ params, searchParams }) => {
   let content = "";
   let title = "";
   let datePublished = "";
   let author = "";
   let error = "";
   let isLoading = true;
+  let decodedUrl;
   let ttr = 0;
   let image;
   let isYouTubeVideo = false;
   let youtubeVideoId = "";
   const { articleUrl } = params;
-  let decodedUrl;
+  const src = searchParams.src || "reader";
   try {
     decodedUrl = atob(decodeURIComponent(articleUrl.replaceAll("-", "/")));
 
@@ -72,7 +73,12 @@ const ArticlePage = async ({ params }) => {
           content={image ? `${image}` : `/assets/poster.png`}
         />
       </head>
-      <main className="max-w-4xl mx-auto p-4 pt-16 rounded-lg mt-8 text-[18px] leading-relaxed">
+      <main
+        className={
+          "max-w-4xl mx-auto p-4 rounded-lg mt-8 text-[18px] leading-relaxed " +
+          (src == "reader" ? "pt-16" : "")
+        }
+      >
         {isLoading ? (
           <p className="text-gray-500 dark:text-gray-400 text-center">
             Loading...

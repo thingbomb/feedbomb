@@ -23,6 +23,11 @@ import {
 import { History } from "lucide-react";
 import { Sidebar } from "lucide-react";
 import { CommandPalette } from "@/components/ui/cmd";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 export default function Home() {
   const [feedsJSON, setFeedsJSON] = useState([]);
@@ -38,6 +43,9 @@ export default function Home() {
   const [rendered, setRendered] = useState(false);
   const [feeds, setFeeds] = useState([]);
   const [readHistory, setReadHistory] = useState(null);
+  const [selectedArticleURL, setSelectedArticleURL] = useState(null);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [panelBalance, setPanelBalance] = useState(60);
 
   const openDialog = () => {
     setDialogOpen(true);
@@ -90,49 +98,22 @@ export default function Home() {
         const content =
           item.getElementsByTagName("content:encoded")[0] ||
           item.querySelector("content") ||
-          "";
+          item.querySelector("description");
         const link = linkElement
           ? linkElement.getAttribute("href") || linkElement.textContent
           : "#";
         const description = item.querySelector("description, summary")
           ? item.querySelector("description, summary").textContent
           : "";
-        let placeholder = document.createElement("div");
-        let potentialImage;
-
-        if (content.innerHTML) {
-          placeholder.innerHTML = decodeHtmlEntities(content.innerHTML);
-          potentialImage =
-            item
-              .getElementsByTagName("media:thumbnail")[0]
-              ?.getAttribute("url") ||
-            item
-              .getElementsByTagName("media:content")[0]
-              ?.getAttribute("url") ||
-            (placeholder.querySelector("img")
-              ? placeholder.querySelector("img").src
-              : `data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw`);
-        } else {
-          placeholder.innerHTML =
-            description ||
-            new Date(
-              item.querySelector("pubDate, published")
-                ? item.querySelector("pubDate, published").textContent
-                : ""
-            ).toDateString();
-          potentialImage =
-            item
-              .getElementsByTagName("media:thumbnail")[0]
-              ?.getAttribute("url") ||
-            `data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw`;
-        }
 
         let pubDate = item.querySelector("pubDate, published")
           ? item.querySelector("pubDate, published").textContent
           : "";
         let dateObj = new Date(pubDate);
         if (isNaN(dateObj.getTime())) dateObj = new Date();
-
+        function stripHTML(input) {
+          return input.replace(/<\/?[^>]+(>|$)/g, "");
+        }
         let authorElement = item.querySelector("author");
         let dcCreatorElement = item.getElementsByTagName("dc:creator")[0];
         let author = authorElement
@@ -142,12 +123,12 @@ export default function Home() {
           : dcCreatorElement
             ? dcCreatorElement.textContent
             : "";
+
         feedItems.push({
           title: title,
           link: link,
-          description: placeholder.innerText,
+          description: stripHTML(content.textContent),
           pubDate: dateObj.toISOString(),
-          image: potentialImage,
           author: author,
           feedURL: url,
         });
@@ -555,86 +536,137 @@ export default function Home() {
               </div>
             </>
           </aside>
-          <div className="p-4 pt-1 overflow-y-auto custom-scrollbar h-full main-content">
-            {allItems.length > 0 ? (
-              <>
-                {pwaCardShowing ? (
-                  <div className="p-3">
-                    <div
-                      className={
-                        "bg-[#FFFFFF14] w-full rounded-lg flex justify-between items-center gap-2 p-3"
-                      }
-                    >
-                      <b>Add Feedbomb as a shortcut</b>
-                      <div className="flex gap-2">
-                        <Button onClick={handleAddToHomeScreen}>
-                          Add to Home Screen
-                        </Button>
-                        <Button variant="outline" onClick={dismissPwaCard}>
-                          Dismiss
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
-                <ul>
-                  {allItems
-                    .filter((item) => {
-                      if (
-                        selector == "all_posts" &&
-                        item.feedURL != "history"
-                      ) {
-                        let check = checkArticle(item.title, item.author);
-                        console.log(check);
-                        return check;
-                      } else {
-                        return (
-                          item.feedURL === selector &&
-                          checkArticle(item.title, item.author)
-                        );
-                      }
-                    })
-                    .map((item, index) => (
-                      <div key={index} className="mb-4">
-                        <a
-                          href={"/read/" + btoa(item.link).replaceAll("/", "-")}
-                          className="text-black dark:text-white grid grid-cols-[150px_calc(100%_-_150px)] gap-4 hover:bg-[#f5f5f5] active:bg-[#e5e5e5] dark:hover:bg-[#FFFFFF14] dark:active:bg-[#FFFFFF1A] p-3 rounded-lg visited:text-[gray] "
-                        >
-                          <img
-                            src={item.image}
-                            loading="lazy"
-                            className="w-[150px] rounded-lg"
-                          />
-                          <div className="right flex flex-col">
-                            <span className="font-bold text-[16px]">
-                              {item.title}
-                            </span>
-                            <span className="text-sm previewText">
-                              by {item.author || item.creator} |{" "}
-                              {timeDifference(
-                                new Date(),
-                                new Date(item.pubDate)
-                              )}
-                              <br />
-                              <br />
-                              {item.description}
-                            </span>
+          <main>
+            <ResizablePanelGroup
+              direction="horizontal"
+              className="w-full h-full"
+            >
+              <ResizablePanel defaultSize={100 - panelBalance}>
+                <div className="p-4 pt-1 overflow-y-auto custom-scrollbar h-full main-content">
+                  {allItems.length > 0 ? (
+                    <>
+                      {pwaCardShowing ? (
+                        <div className="p-3">
+                          <div
+                            className={
+                              "bg-[#FFFFFF14] w-full rounded-lg flex justify-between items-center gap-2 p-3"
+                            }
+                          >
+                            <b>Add Feedbomb as a shortcut</b>
+                            <div className="flex gap-2">
+                              <Button onClick={handleAddToHomeScreen}>
+                                Add to Home Screen
+                              </Button>
+                              <Button
+                                variant="outline"
+                                onClick={dismissPwaCard}
+                              >
+                                Dismiss
+                              </Button>
+                            </div>
                           </div>
-                        </a>
-                      </div>
-                    ))}
-                </ul>
-              </>
-            ) : feedsURLs.length === 0 && rendered ? (
-              <div className="text-left p-3">
-                <p className="text-gray-500">No feeds added yet</p>
-              </div>
-            ) : (
-              <div className="flex justify-center items-center p-3">
-                <LoaderCircle className="animate-spin" />
-              </div>
-            )}
-          </div>
+                        </div>
+                      ) : null}
+                      <ul>
+                        {allItems
+                          .filter((item) => {
+                            if (
+                              selector == "all_posts" &&
+                              item.feedURL != "history"
+                            ) {
+                              let check = checkArticle(item.title, item.author);
+                              console.log(check);
+                              return check;
+                            } else {
+                              return (
+                                item.feedURL === selector &&
+                                checkArticle(item.title, item.author)
+                              );
+                            }
+                          })
+                          .map((item, index) => (
+                            <div key={index} className="mb-4">
+                              <a
+                                href={
+                                  "/read/" +
+                                  btoa(item.link).replaceAll("/", "-")
+                                }
+                                onClick={(e) => {
+                                  if (document.body.offsetWidth > 640) {
+                                    e.preventDefault();
+                                    setIframeLoaded(false);
+                                    setSelectedArticleURL(
+                                      `/read/${btoa(item.link)}?src=embed`
+                                    );
+                                  }
+                                }}
+                                className="text-black dark:text-white flex gap-4 hover:bg-[#f5f5f5] active:bg-[#e5e5e5] dark:hover:bg-[#FFFFFF14] dark:active:bg-[#FFFFFF1A] p-3 rounded-lg visited:text-[gray] "
+                              >
+                                <div className="right flex flex-col">
+                                  <span className="font-bold text-[16px]">
+                                    {item.title}
+                                  </span>
+                                  <span className="text-sm previewText">
+                                    by {item.author || item.creator} |{" "}
+                                    {timeDifference(
+                                      new Date(),
+                                      new Date(item.pubDate)
+                                    )}
+                                    <br />
+                                    <br />
+                                    <span
+                                      dangerouslySetInnerHTML={{
+                                        __html: item.description,
+                                      }}
+                                    ></span>
+                                  </span>
+                                </div>
+                              </a>
+                            </div>
+                          ))}
+                      </ul>
+                    </>
+                  ) : feedsURLs.length === 0 && rendered ? (
+                    <div className="text-left p-3">
+                      <p className="text-gray-500">No feeds added yet</p>
+                    </div>
+                  ) : (
+                    <div className="flex justify-center items-center p-3">
+                      <LoaderCircle className="animate-spin" />
+                    </div>
+                  )}
+                </div>
+              </ResizablePanel>
+              <ResizableHandle withHandle className="max-sm:hidden" />
+              <ResizablePanel
+                defaultSize={panelBalance}
+                className="max-sm:hidden"
+              >
+                <div id="article-content" className="h-full w-full relative">
+                  {selectedArticleURL != null && (
+                    <>
+                      {!iframeLoaded ? (
+                        <div className="flex justify-center items-center p-3">
+                          {selectedArticleURL != null ? (
+                            <div className="absolute inset-0 flex justify-center items-center">
+                              <LoaderCircle className="animate-spin" />
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : null}
+                      <iframe
+                        src={selectedArticleURL}
+                        onLoad={() => {
+                          setIframeLoaded(true);
+                        }}
+                        className={iframeLoaded ? "h-full w-full" : "hidden"}
+                      ></iframe>
+                    </>
+                  )}
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </main>
         </div>
       </div>
     </>
