@@ -596,7 +596,7 @@ export default function Home() {
                                     e.preventDefault();
                                     setIframeLoaded(false);
                                     setSelectedArticleURL(
-                                      `/read/${btoa(item.link)}?src=embed`
+                                      `/read/${btoa(item.link).replaceAll("/", "-")}?src=embed`
                                     );
                                   }
                                 }}
