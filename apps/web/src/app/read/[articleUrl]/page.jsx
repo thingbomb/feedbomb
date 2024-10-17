@@ -49,6 +49,8 @@ const ArticlePage = async ({ params, searchParams }) => {
     }
     isLoading = false;
 
+    content.replaceAll("<a", "<a target='_blank'");
+
     return (
       <html lang="en">
         <head>
@@ -130,13 +132,22 @@ const ArticlePage = async ({ params, searchParams }) => {
                     {ttr > 60 ? ` | ${Math.floor(ttr / 60)} min read` : ""}
                   </p>
                 )}
-                <a href={decodedUrl}>
-                  <Button>
-                    {isYouTubeVideo
-                      ? "Watch on YouTube"
-                      : "Read on original site"}
-                  </Button>
-                </a>
+                <div className="flex gap-2">
+                  <a href={decodedUrl}>
+                    <Button>
+                      {isYouTubeVideo
+                        ? "Watch on YouTube"
+                        : "Read on original site"}
+                    </Button>
+                  </a>
+                  {src == "embed" && (
+                    <ShareOptions
+                      variant="full"
+                      url={decodedUrl}
+                      title={title}
+                    />
+                  )}
+                </div>
                 <br />
                 <br />
                 {isYouTubeVideo ? (
@@ -191,9 +202,11 @@ const ArticlePage = async ({ params, searchParams }) => {
             <a href={decodedUrl}>
               <Button>Read on original site</Button>
             </a>
-            <a href="/" className="text-black dark:text-white">
-              <Button variant="outline">Back to home</Button>
-            </a>
+            {src == "reader" && (
+              <a href="/" className="text-black dark:text-white">
+                <Button variant="outline">Back to home</Button>
+              </a>
+            )}
           </div>
         </div>
       </>

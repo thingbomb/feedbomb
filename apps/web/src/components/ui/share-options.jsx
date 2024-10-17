@@ -15,10 +15,14 @@ export function ShareOptions(props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <ShareIcon className="h-[1.2rem] w-[1.2rem]" />
-          <span className="sr-only">Share post</span>
-        </Button>
+        {props.variant === "full" ? (
+          <Button variant="outline">Share</Button>
+        ) : (
+          <Button variant="outline" size="icon">
+            <ShareIcon className="h-[1.2rem] w-[1.2rem]" />
+            <span className="sr-only">Share post</span>
+          </Button>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem
