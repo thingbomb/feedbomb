@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Moon, Sun } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +24,25 @@ export function ShareOptions(props) {
         <DropdownMenuItem
           onClick={() => {
             window.open(
+              `mailto:?subject=${encodeURIComponent(
+                props.title
+              )}&body=${encodeURIComponent(props.url)}`,
+              "_blank"
+            );
+          }}
+        >
+          Email
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            window.open(`sms:?body=${encodeURIComponent(props.url)}`, "_blank");
+          }}
+        >
+          Messages
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
+            window.open(
               `https://twitter.com/intent/tweet?url=${encodeURIComponent(
                 props.url
               )}`,
@@ -39,7 +57,7 @@ export function ShareOptions(props) {
             window.open(
               `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(
                 props.url
-              )}`,
+              )}&t=${encodeURIComponent(props.title)}`,
               "_blank"
             );
           }}
@@ -48,10 +66,20 @@ export function ShareOptions(props) {
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
+            window.open(
+              `https://getpocket.com/edit?url=${props.url}&title=${props.title}`,
+              "_blank"
+            );
+          }}
+        >
+          Pocket
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => {
             navigator.clipboard.writeText(props.url);
           }}
         >
-          Copy
+          Copy link
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

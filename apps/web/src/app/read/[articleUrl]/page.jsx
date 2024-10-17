@@ -1,6 +1,10 @@
+import BackButton from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/ui/dark-toggle";
 import ReadHistory from "@/components/ui/read-history";
+import { ShareOptions } from "@/components/ui/share-options";
 import { extract } from "@extractus/article-extractor";
+import { SettingsIcon } from "lucide-react";
 
 const ArticlePage = async ({ params, searchParams }) => {
   let decodedUrl;
@@ -74,7 +78,23 @@ const ArticlePage = async ({ params, searchParams }) => {
           />
         </head>
         <body>
-          <main
+          {src == "reader" && (
+            <header className="p-2 pl-4 pr-4 flex justify-between gap-4 items-center select-none fixed right-0 left-0 top-0 bg-white dark:bg-black">
+              <div className="flex gap-4 items-center">
+                <BackButton />
+              </div>
+              <div className="flex gap-2 items-center">
+                <ModeToggle />
+                <ShareOptions url={decodedUrl} title={title} />
+                <a href="/settings" className="text-black dark:text-white">
+                  <Button variant="outline" size="icon">
+                    <SettingsIcon className="h-[1.2rem] w-[1.2rem]" />
+                  </Button>
+                </a>
+              </div>
+            </header>
+          )}
+          <article
             className={
               "max-w-4xl mx-auto p-4 rounded-lg mt-8 text-[18px] leading-relaxed " +
               (src == "reader" ? "pt-16" : "")
@@ -137,7 +157,7 @@ const ArticlePage = async ({ params, searchParams }) => {
                 )}
               </>
             )}
-          </main>
+          </article>
           <ReadHistory
             data={{
               title: title,
@@ -151,19 +171,32 @@ const ArticlePage = async ({ params, searchParams }) => {
     );
   } catch (err) {
     return (
-      <div className="max-w-4xl mx-auto p-4 rounded-lg mt-12 text-[18px]">
-        <b>We're sorry, but we couldn't process this article.</b>
-        <br />
-        <br />
-        <div className="flex gap-2">
-          <a href={decodedUrl}>
-            <Button>Read on original site</Button>
-          </a>
-          <a href="/" className="text-black dark:text-white">
-            <Button variant="outline">Back to home</Button>
-          </a>
+      <>
+        <head>
+          <title>Couldn't process article</title>
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta property="og:title" content="Couldn't process article" />
+          <meta
+            property="og:description"
+            content="We're sorry, but we couldn't process this article."
+          />
+          <meta property="og:image" content="/assets/poster.png" />
+        </head>
+        <div className="max-w-4xl mx-auto p-4 rounded-lg mt-12 text-[18px]">
+          <b>We're sorry, but we couldn't process this article.</b>
+          <br />
+          <br />
+          <div className="flex gap-2">
+            <a href={decodedUrl}>
+              <Button>Read on original site</Button>
+            </a>
+            <a href="/" className="text-black dark:text-white">
+              <Button variant="outline">Back to home</Button>
+            </a>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 };
