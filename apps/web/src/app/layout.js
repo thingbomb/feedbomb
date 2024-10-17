@@ -23,7 +23,6 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="og:title" content="Feedbomb" />
         <meta
           name="og:description"
           content="A minimalistic, fast RSS-reader."
@@ -32,6 +31,7 @@ export default function RootLayout({ children }) {
           <>
             <meta property="og:image" content="/assets/poster.png" />
             <title>Feedbomb</title>
+            <meta name="og:title" content="Feedbomb" />
           </>
         )}
       </head>
