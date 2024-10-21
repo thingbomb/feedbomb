@@ -14,12 +14,13 @@ export default function Read() {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if the 'url' parameter exists in the query
-    if (router.query.url) {
+    // Check if the 'url' parameter exists in the searchParams
+    const urlParam = new URLSearchParams(window.location.search).get('url');
+    if (urlParam) {
       // Decode and set the URL from the query parameter
-      setArticleUrl(decodeURIComponent(router.query.url));
+      setArticleUrl(decodeURIComponent(urlParam));
     }
-  }, [router.query.url]);
+  }, []);
 
   return (
     <>
