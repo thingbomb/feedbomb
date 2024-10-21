@@ -6,10 +6,21 @@ import { ModeToggle } from "@/components/ui/dark-toggle";
 import { Input } from "@/components/ui/input";
 import { SettingsIcon } from "lucide-react";
 import { ChevronLeft } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
 export default function Read() {
   const [articleUrl, setArticleUrl] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if the 'url' parameter exists in the query
+    if (router.query.url) {
+      // Decode and set the URL from the query parameter
+      setArticleUrl(decodeURIComponent(router.query.url));
+    }
+  }, [router.query.url]);
+
   return (
     <>
       <header className="p-2 pl-4 pr-4 flex justify-between gap-4 items-center select-none absolute left-0 right-0 top-0 z-10">
