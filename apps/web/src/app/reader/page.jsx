@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { SettingsIcon } from "lucide-react";
 import { ChevronLeft } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function Read() {
   const [articleUrl, setArticleUrl] = useState("");
