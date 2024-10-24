@@ -29,13 +29,6 @@ export default function RootLayout({ children }) {
           name="og:description"
           content="A minimalistic, fast RSS-reader."
         />
-        {!pathname.startsWith("/read/") && (
-          <>
-            <meta property="og:image" content="/assets/poster.png" />
-            <title>Feedbomb</title>
-            <meta name="og:title" content="Feedbomb" />
-          </>
-        )}
       </head>
       <body>
         <ThemeProvider
