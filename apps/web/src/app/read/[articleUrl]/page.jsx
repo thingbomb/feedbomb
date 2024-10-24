@@ -1,7 +1,6 @@
 import BackButton from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/dark-toggle";
-import ReadHistory from "@/components/ui/read-history";
 import { ShareOptions } from "@/components/ui/share-options";
 import { extract } from "@extractus/article-extractor";
 import { SettingsIcon } from "lucide-react";
@@ -169,14 +168,6 @@ const ArticlePage = async ({ params, searchParams }) => {
               </>
             )}
           </article>
-          <ReadHistory
-            data={{
-              title: title,
-              link: decodedUrl,
-              pubDate: datePublished,
-              author: typeof author === "string" ? author : author.name,
-            }}
-          />
         </body>
       </html>
     );
