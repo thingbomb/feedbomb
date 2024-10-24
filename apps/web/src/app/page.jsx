@@ -1,5 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/ui/dark-toggle";
+import { SettingsIcon, LoaderCircle } from "lucide-react";
+import { CommandPalette } from "@/components/ui/cmd";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import {
   Dialog,
   DialogContent,
@@ -9,20 +18,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/ui/dark-toggle";
-import {
-  SettingsIcon,
-  LucideHome,
-  LucidePlus,
-  LoaderCircle,
-} from "lucide-react";
-import { CommandPalette } from "@/components/ui/cmd";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   SidebarContent,
@@ -35,6 +30,11 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import Parser from "rss-parser";
+import DOMPurify from "dompurify";
+import { ShareOptions } from "@/components/ui/share-options";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 export default function Home() {
   const [feedsJSON, setFeedsJSON] = useState([]);
@@ -42,122 +42,26 @@ export default function Home() {
   const [newFeedURL, setNewFeedURL] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selector, setSelector] = useState("all_posts");
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pwaCardShowing, setPwaCardShowing] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [rules, setRules] = useState([]);
   const [rendered, setRendered] = useState(false);
   const [feeds, setFeeds] = useState([]);
-  const [selectedArticleURL, setSelectedArticleURL] = useState(null);
-  const [iframeLoaded, setIframeLoaded] = useState(false);
-  const [panelBalance, setPanelBalance] = useState(60);
+  const panelBalance = 60;
+  const [selectedArticle, setSelectedArticle] = useState(null);
 
   const openDialog = () => {
     setDialogOpen(true);
   };
 
   async function parseRSSFeed(xmlString, url) {
-    let feed = {};
-    let feedItems = [];
-    try {
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(xmlString, "application/xml");
-      console.log(xmlDoc);
-      let feedTitle = xmlDoc.querySelector("title")
-        ? xmlDoc.querySelector("title").textContent
-        : "";
-
-      let feedIcon = xmlDoc.querySelector("link")
-        ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(
-            xmlDoc.querySelector("link")?.getAttribute("href")?.split("/")[2] ||
-              url.split("/")[2]
-          )}&sz=32`
-        : `https://www.google.com/s2/favicons?domain=${encodeURIComponent(
-            url.split("/")[2]
-          )}&sz=32`;
-      feed.title = feedTitle;
-      feed.feedURL = url;
-      feed.icon = feedIcon;
-      feed.type = "feeds";
-
-      let items =
-        xmlDoc.querySelectorAll("item, entry") ||
-        xmlDoc
-          .querySelector("rss")
-          .querySelector("channel")
-          .querySelectorAll("item, entry");
-      setFeeds((prev) => [
-        ...prev,
-        {
-          title: feedTitle,
-          feedURL: url,
-          icon: feedIcon,
-          type: "feeds",
-        },
-      ]);
-      items.forEach((item) => {
-        const title = item.querySelector("title")
-          ? item.querySelector("title").textContent
-          : "";
-        const linkElement = item.querySelector("link");
-        const content =
-          item.getElementsByTagName("content:encoded")[0] ||
-          item.querySelector("content") ||
-          item.querySelector("description");
-        const link = linkElement
-          ? linkElement.getAttribute("href") || linkElement.textContent
-          : "#";
-        const description = item.querySelector("description, summary")
-          ? item.querySelector("description, summary").textContent
-          : "";
-
-        let pubDate = item.querySelector("pubDate, published")
-          ? item.querySelector("pubDate, published").textContent
-          : "";
-        let dateObj = new Date(pubDate);
-        if (isNaN(dateObj.getTime())) dateObj = new Date();
-        function stripHTML(input) {
-          return input.replace(/<\/?[^>]+(>|$)/g, "");
-        }
-        let authorElement = item.querySelector("author");
-        let dcCreatorElement = item.getElementsByTagName("dc:creator")[0];
-        let author = authorElement
-          ? authorElement.textContent ||
-            authorElement.querySelector("name")?.textContent ||
-            ""
-          : dcCreatorElement
-            ? dcCreatorElement.textContent
-            : "";
-
-        feedItems.push({
-          title: title,
-          link: link,
-          description: stripHTML(content.textContent),
-          pubDate: dateObj.toISOString(),
-          author: author,
-          feedURL: url,
-        });
-      });
-    } catch (error) {
-      console.error("Error parsing RSS feed:", error);
-    }
-    feed.items = feedItems;
+    const parser = new Parser();
+    const feed = await parser.parseString(xmlString);
+    feed.feedId = feed.link;
+    feed.items.forEach((item) => {
+      item.feedId = feed.link;
+    });
     return feed;
-  }
-
-  function decodeHtmlEntities(str) {
-    const entities = {
-      "&lt;": "<",
-      "&gt;": ">",
-      "&amp;": "&",
-      "&quot;": '"',
-      "&#39;": "'",
-    };
-    return str.replace(
-      /&(lt|gt|amp|quot|#39);/g,
-      (match, p1) => entities[match] || match
-    );
   }
 
   async function fetchFeeds(urls) {
@@ -175,6 +79,7 @@ export default function Home() {
             let xml = data[i].xml;
             if (xml != null) {
               let feed = await parseRSSFeed(xml, data[i].url);
+              setFeeds((prev) => [...prev, feed]);
               setFeedsJSON((prev) => [...prev, feed]);
             }
           }
@@ -208,21 +113,6 @@ export default function Home() {
     } else {
       return "approximately " + Math.round(elapsed / msPerYear) + " years ago";
     }
-  }
-
-  function decodeHtmlEntities(str) {
-    const entities = {
-      "&lt;": "<",
-      "&gt;": ">",
-      "&amp;": "&",
-      "&quot;": '"',
-      "&#39;": "'",
-    };
-
-    return str.replace(
-      /&(lt|gt|amp|quot|#39);/g,
-      (match, p1) => entities[match] || match
-    );
   }
 
   const handleAddFeed = () => {
@@ -363,20 +253,58 @@ export default function Home() {
                   <span>Home</span>
                 </SidebarMenuButton>
                 {feeds.map((feed, index) => {
-                  if (feed.type != "feeds") return null;
                   return (
                     <SidebarMenuItem key={index}>
                       <SidebarMenuButton
                         asChild
-                        isActive={selector == feed.feedURL}
+                        isActive={selector == feed.feedId}
                         className="select-none cursor-pointer"
-                        onClick={() => setSelector(feed.feedURL)}
+                        onClick={() => setSelector(feed.feedId)}
                       >
                         <span>{feed.title}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   );
                 })}
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                  <DialogTrigger asChild>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        asChild
+                        onClick={() => openDialog()}
+                        className="select-none cursor-pointer"
+                      >
+                        <span>Add feed</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Add New RSS Feed</DialogTitle>
+                      <DialogDescription>
+                        Enter the URL of the RSS feed you want to add.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4">
+                      <div>
+                        <Label htmlFor="feedUrl" className="text-right">
+                          Feed URL
+                        </Label>
+                        <Input
+                          id="feedUrl"
+                          value={newFeedURL}
+                          onChange={(e) => setNewFeedURL(e.target.value)}
+                          className="col-span-3"
+                          placeholder="https://example.com/rss"
+                        />
+                      </div>
+                    </div>
+                    <a href="/discover">Discover more feeds</a>
+                    <DialogFooter>
+                      <Button onClick={handleAddFeed}>Add Feed</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -432,7 +360,7 @@ export default function Home() {
                             return check;
                           } else {
                             return (
-                              item.feedURL === selector &&
+                              item.feedId === selector &&
                               checkArticle(item.title, item.author)
                             );
                           }
@@ -440,16 +368,11 @@ export default function Home() {
                         .map((item, index) => (
                           <div key={index} className="mb-4">
                             <a
-                              href={
-                                "/read/" + btoa(item.link).replaceAll("/", "-")
-                              }
+                              href={item.link}
                               onClick={(e) => {
                                 if (document.body.offsetWidth > 640) {
                                   e.preventDefault();
-                                  setIframeLoaded(false);
-                                  setSelectedArticleURL(
-                                    `/read/${btoa(item.link).replaceAll("/", "-")}?src=embed`
-                                  );
+                                  setSelectedArticle(item);
                                 }
                               }}
                               className="text-black dark:text-white flex gap-4 hover:bg-[#f5f5f5] active:bg-[#e5e5e5] dark:hover:bg-[#FFFFFF14] dark:active:bg-[#FFFFFF1A] p-3 rounded-lg visited:text-[gray] "
@@ -466,11 +389,7 @@ export default function Home() {
                                   )}
                                   <br />
                                   <br />
-                                  <span
-                                    dangerouslySetInnerHTML={{
-                                      __html: item.description,
-                                    }}
-                                  ></span>
+                                  <span>{item.contentSnippet}</span>
                                 </span>
                               </div>
                             </a>
@@ -494,26 +413,33 @@ export default function Home() {
               defaultSize={panelBalance}
               className="max-sm:hidden"
             >
-              <div id="article-content" className="h-full w-full relative">
-                {selectedArticleURL != null && (
-                  <>
-                    {!iframeLoaded ? (
-                      <div className="flex justify-center items-center p-3">
-                        {selectedArticleURL != null ? (
-                          <div className="absolute inset-0 flex justify-center items-center">
-                            <LoaderCircle className="animate-spin" />
-                          </div>
-                        ) : null}
-                      </div>
-                    ) : null}
-                    <iframe
-                      src={selectedArticleURL}
-                      onLoad={() => {
-                        setIframeLoaded(true);
+              <div
+                id="article-content"
+                className="h-full w-full relative flex justify-center"
+              >
+                {selectedArticle != null && (
+                  <div className="p-4 pt-1 overflow-y-auto custom-scrollbar h-full main-content max-w-3xl mt-6">
+                    <h1>{selectedArticle.title}</h1>
+                    <br />
+                    <div className="flex gap-2">
+                      <a href={selectedArticle.link}>
+                        <Button>Read on original site</Button>
+                      </a>
+                      <ShareOptions
+                        title={selectedArticle.title}
+                        url={selectedArticle.link}
+                        variant="full"
+                      ></ShareOptions>
+                    </div>
+                    <br />
+                    <article
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(
+                          selectedArticle.content || selectedArticle.summary
+                        ),
                       }}
-                      className={iframeLoaded ? "h-full w-full" : "hidden"}
-                    ></iframe>
-                  </>
+                    ></article>
+                  </div>
                 )}
               </div>
             </ResizablePanel>

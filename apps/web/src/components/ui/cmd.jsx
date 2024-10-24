@@ -3,22 +3,18 @@ import { useEffect } from "react";
 
 const { MagnifyingGlassIcon } = require("@radix-ui/react-icons");
 import {
-  Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
-  CommandShortcut,
 } from "@/components/ui/command";
 import { Home } from "lucide-react";
 const { Sun } = require("lucide-react");
 const { Moon } = require("lucide-react");
 const { Computer } = require("lucide-react");
 const { PlusIcon } = require("lucide-react");
-const { BookOpen } = require("lucide-react");
 const { useTheme } = require("next-themes");
 const { useState } = require("react");
 
@@ -49,9 +45,6 @@ export function CommandPalette({ onAddFeed }) {
         break;
       case "discover":
         window.location.href = "/discover";
-        break;
-      case "reader":
-        window.location.href = "/reader";
         break;
       case "add-feed":
         onAddFeed();
@@ -84,10 +77,6 @@ export function CommandPalette({ onAddFeed }) {
             <CommandItem onSelect={() => handleCommand("settings")}>
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
-            </CommandItem>
-            <CommandItem onSelect={() => handleCommand("reader")}>
-              <BookOpen className="mr-2 h-4 w-4" />
-              <span>Reader</span>
             </CommandItem>
             <CommandItem onSelect={() => handleCommand("discover")}>
               <MagnifyingGlassIcon className="mr-2 h-4 w-4" />

@@ -157,7 +157,7 @@ img {
 }
 .dark .custom-scrollbar {
   scrollbar-width: normal;
-  scrollbar-color: #525252 black !important;
+  scrollbar-color: #525252 hsl(var(--background)) !important;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
