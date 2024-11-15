@@ -1,0 +1,6 @@
+main = ".worker-next/index.mjs"
+name = "feedbomb"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+experimental_assets = { directory = ".worker-next/assets", binding = "ASSETS" }
+send_metrics = false
