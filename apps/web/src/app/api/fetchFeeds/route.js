@@ -3,6 +3,8 @@ import iconv from "iconv-lite";
 
 let cache = {};
 
+export const runtime = "edge";
+
 export async function POST(req) {
   const { urls } = await req.json();
   const responses = [];
