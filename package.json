@@ -16,5 +16,9 @@
   "packageManager": "pnpm@8.15.6",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "cookie": "0.7.0",
+    "undici": "5.28.5"
   }
 }
