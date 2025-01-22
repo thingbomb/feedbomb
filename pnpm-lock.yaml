@@ -3958,7 +3958,7 @@ snapshots:
       ts-morph: 12.0.0
       ts-node: 10.9.1(@types/node@16.18.11)(typescript@4.9.5)
       typescript: 4.9.5
-      undici: 5.28.4
+      undici: 5.28.5
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -4849,7 +4849,7 @@ snapshots:
       exit-hook: 2.2.1
       glob-to-regexp: 0.4.1
       stoppable: 1.1.0
-      undici: 5.28.4
+      undici: 5.28.5
       workerd: 1.20241218.0
       ws: 8.18.0
       youch: 3.3.4
